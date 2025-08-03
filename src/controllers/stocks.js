@@ -12,11 +12,12 @@ class StocksController {
   }
 
   async addStock(req, res) {
-    const { symbol, name, current_price } = req.body;
+    const { symbol, name, current_price, sector, type_of_play } = req.body;
+  
     try {
       const [result] = await db.query(
-        'INSERT INTO stocks (symbol, name, current_price) VALUES (?, ?, ?)',
-        [symbol, name, current_price]
+        'INSERT INTO stocks (symbol, name, current_price, sector, type_of_play) VALUES (?, ?, ?, ?, ?)',
+        [symbol, name, current_price, sector, type_of_play]
       );
       res.status(201).json({ id: result.insertId });
     } catch (err) {
@@ -24,6 +25,7 @@ class StocksController {
       res.status(500).json({ error: 'Database insert error' });
     }
   }
+  
 
   async buyStock(req, res) {
     const { symbol, quantity, price } = req.body;
@@ -97,12 +99,21 @@ class StocksController {
   }
   async getHoldings(req, res) {
     const [rows] = await db.query(`
-      SELECT s.symbol, h.quantity, h.avg_buy_price, s.current_price
+      SELECT 
+        h.holding_id,
+        s.symbol,
+        s.name,
+        s.current_price,
+        h.quantity,
+        h.avg_buy_price,
+        s.sector,
+        s.type_of_play
       FROM holdings h
-      JOIN stocks s ON h.stock_id = s.stock_id
+      JOIN stocks s ON h.stock_id = s.stock_id;
     `);
     res.json(rows);
   }
+  
   
   async getTransactions(req, res) {
     const [rows] = await db.query(`

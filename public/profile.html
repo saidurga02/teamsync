@@ -5,42 +5,163 @@
   <title>User Profile</title>
   <link rel="stylesheet" href="profile.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #05152c;
+      color: #333;
+    }
+
+    .profile-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .left {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .right {
+      flex: 1;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-section {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .user-info-box {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .donut-box {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 240px;
+      width: 240px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-section {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .bar-charts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .bar-charts canvas {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+    }
+
+    .sold-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f5f5f5;
+    }
+
+    ul {
+      padding-left: 0;
+      list-style: none;
+    }
+
+    @media (max-width: 768px) {
+      .user-section {
+        flex-direction: column;
+      }
+
+      .bar-charts {
+        flex-direction: column;
+      }
+
+      .donut-box {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="profile-container" style="display: flex; gap: 20px; padding: 20px;">
-    
-    <!-- LEFT PANEL: 75% width -->
-    <div class="left" style="flex: 3;">
-      
-      <!-- USER INFO -->
-      <div class="user-info-box" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        <h2>👤 Welcome, <span id="userName">Tim</span></h2>
-        <p>Email: <span id="userEmail">tim@gmail.com</span></p>
-        <p>Joined: <span id="joinedDate">02/08/2025</span></p>
+  <div class="profile-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left">
+
+      <!-- USER INFO & DONUT CHART -->
+      <div class="user-section">
+        <div class="user-info-box">
+          <h2>👤 Welcome, <span id="userName">Tim</span></h2>
+          <p>Email: <span id="userEmail">tim@gmail.com</span></p>
+          <p>Joined: <span id="joinedDate">02/08/2025</span></p>
+        </div>
+        <div class="donut-box">
+          <canvas id="donutChart" width="200" height="200"></canvas>
+        </div>
       </div>
-      <h3>📊 Portfolio Overview</h3>
-      <!-- CHARTS -->
-      <div class="chart-section" style="background: #fff; padding: 15px; border-radius: 8px;">
-       
 
-        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-          <div style="flex: 1 1 300px;">
-            <canvas id="donutChart" height="200"></canvas>
-          </div>
-
-          <div style="flex: 2 1 500px;">
-            <canvas id="lineChart" height="200"></canvas>
-          </div>
+      <!-- CHARTS OVERVIEW -->
+      <div class="chart-section">
+        <h3>📊 Portfolio Overview</h3>
+        <div class="bar-charts">
+          <canvas id="sectorBarChart" height="250"></canvas>
+          <canvas id="typeBarChart" height="250"></canvas>
         </div>
 
-        <!-- The bar chart canvas will be added by JS here -->
+        <!-- Price History -->
+        <canvas id="lineChart" height="250"></canvas>
       </div>
 
       <!-- SOLD STOCKS -->
-      <div class="sold-section" style="margin-top: 30px;">
+      <div class="sold-section">
         <h3>🛒 Sold Stocks History</h3>
-        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-          <thead style="background: #eee;">
+        <table>
+          <thead>
             <tr>
               <th>Symbol</th>
               <th>Sold At</th>
@@ -54,11 +175,12 @@
       </div>
     </div>
 
-    <!-- RIGHT PANEL: 25% width -->
-    <div class="right" style="flex: 1; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+    <!-- RIGHT PANEL -->
+    <div class="right">
       <h3>📦 Holdings</h3>
-      <ul id="holdingsList" style="list-style: none; padding-left: 0;"></ul>
+      <ul id="holdingsList"></ul>
     </div>
+
   </div>
 
   <script src="profile.js"></script>
