@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Main</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      font-family: Arial, sans-serif;
+    }
+    .sidebar {
+      width: 200px;
+      background-color: #0a1f44;
+      color: white;
+      height: 100vh;
+      padding-top: 0px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar li {
+      padding: 15px;
+      cursor: pointer;
+    }
+    .sidebar li:hover {
+      background-color: #1a3b6b;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 90vh;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <ul>
+      <li onclick="loadSection('profile')">Profile</li>
+      <li onclick="loadSection('history')">History</li>
+      <li onclick="loadSection('invest')">Invest</li>
+    </ul>
+  </div>
+  <div class="content" id="content">
+    <div id="profile">Loading profile...</div>
+  </div>
+
+  <script>
+    function loadSection(section) {
+      const content = document.getElementById('content');
+      if (section === 'profile') {
+        content.innerHTML = `<iframe src="profile.html"></iframe>`;
+      } else if (section === 'history') {
+        content.innerHTML = `<h2>📜 Investment History</h2><p>No transactions yet.</p>`;
+      } else if (section === 'invest') {
+        content.innerHTML = `<iframe src="dashboard.html"></iframe>`;
+      }
+    }
+
+    // Load profile by default
+    window.onload = () => loadSection('profile');
+  </script>
+</body>
+</html>

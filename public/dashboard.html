@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stock Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="content" id="content">
+    <h1>Performance</h1>
+    <div id="netWorth">Net Worth: ₹<span id="netValue">0</span></div>
+
+    <div class="buy-sell">
+      <input type="text" id="symbol" placeholder="Symbol (e.g., AAPL)" />
+      <input type="number" id="quantity" placeholder="Quantity" />
+      <input type="number" id="price" placeholder="Price" />
+      <button onclick="buyStock()">Buy</button>
+      <button onclick="sellStock()">Sell</button>
+    </div>
+    
+    
+    <div class="filters">
+  <div class="filter-row">
+    <strong>Type:</strong>
+    <div class="filter-group">
+      <label><input type="checkbox" class="typeFilter" value="Intraday"> Intraday</label>
+      <label><input type="checkbox" class="typeFilter" value="Swing"> Swing</label>
+      <label><input type="checkbox" class="typeFilter" value="Long-Term"> Long-Term</label>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <strong>Sector:</strong>
+    <div class="filter-group">
+      <label><input type="checkbox" class="sectorFilter" value="Tech"> Tech</label>
+      <label><input type="checkbox" class="sectorFilter" value="Retail"> Retail</label>
+      <label><input type="checkbox" class="sectorFilter" value="Finance"> Finance</label>
+      <label><input type="checkbox" class="sectorFilter" value="Consumer"> Consumer</label>
+      <label><input type="checkbox" class="sectorFilter" value="Telecom"> Telecom</label>
+    </div>
+  </div>
+</div>
+
+
+    <table id="stocksTable" class="stocks-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Open</th>
+          <th>Prev Close</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Volume</th>
+          <th>P/L</th>
+        </tr>
+      </thead>
+      <tbody id="stocksBody"></tbody>
+    </table>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
