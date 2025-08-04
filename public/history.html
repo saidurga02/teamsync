@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock Holdings</title>
+  <link rel="stylesheet" href="history.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Net Worth: ₹<span id="netValue"></span></h2>
+  
+  <div id="historyList"></div>
+
+  <!-- Modal -->
+  <div id="stockModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modalSymbol"></h2>
+      <p>Sector: <span id="modalSector"></span></p>
+      <p>Type of Play: <span id="modalPlay"></span></p>
+      <p>Volume: <span id="modalVolume"></span></p>
+      <p>Market Cap: <span id="modalMarketCap"></span></p>
+      <p>Current Price: ₹<span id="modalCurrentPrice"></span></p>
+
+
+      <canvas id="modalChart" width="600" height="300"></canvas>
+
+      <hr>
+
+      <h3>Buy Stock</h3>
+      <input id="buyQty" placeholder="Quantity" type="number">
+      <input id="buyPrice" placeholder="Price" type="number">
+      <button id="buyBtn">Buy</button>
+
+      <h3>Sell Stock</h3>
+      <input id="sellQty" placeholder="Quantity" type="number">
+      <input id="sellPrice" placeholder="Price" type="number">
+      <button id="sellBtn">Sell</button>
+    </div>
+  </div>
+
+  <script src="history.js"></script>
+</body>
+</html>

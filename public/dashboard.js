@@ -94,6 +94,13 @@ function buyStock() {
   const price = parseFloat(document.getElementById('price').value);
   if (!symbol || isNaN(quantity) || isNaN(price)) return alert("Invalid input");
 
+  const stock = allStocks.find(s => s.symbol === symbol);
+  if (!stock) return alert("Stock not found.");
+
+  if (price < stock.current_price) {
+    return alert(`You can only buy at or above the current price (₹${stock.current_price}).`);
+  }
+
   const cost = quantity * price;
   if (netWorth < cost) return alert(`Insufficient funds. You need ₹${cost}, but have ₹${netWorth}.`);
 
@@ -128,6 +135,13 @@ function sellStock() {
     return alert("You don't own enough shares to sell.");
   }
 
+  const stock = allStocks.find(s => s.symbol === symbol);
+  if (!stock) return alert("Stock not found.");
+
+  if (price > stock.current_price) {
+    return alert(`You can only sell at or below the current price (₹${stock.current_price}).`);
+  }
+
   fetch('/api/stocks/sell', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -145,6 +159,7 @@ function sellStock() {
     document.getElementById('price').value = '';
   });
 }
+
 
 function persistData() {
   localStorage.setItem('holdings', JSON.stringify(holdings));

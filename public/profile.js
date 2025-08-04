@@ -1,41 +1,90 @@
 // ========================== USER INFO ==============================
 async function fetchUserData() {
     const userId = 1;
-    const userRes = await fetch(`/api/users/${userId}`);
-    const user = await userRes.json();
+    try {
+      const userRes = await fetch(`/api/users/${userId}`);
+      const user = await userRes.json();
   
-    document.getElementById('userName').innerText = user.name;
-    document.getElementById('joinedDate').innerText = new Date(user.joined_at).toDateString();
+      const userName = user?.name || 'James Charlie';
+      const joinedAt = new Date(user?.joined_at);
+      const isValidDate = joinedAt instanceof Date && !isNaN(joinedAt);
+  
+      document.getElementById('userName').innerText = userName;
+      document.getElementById('joinedDate').innerText = isValidDate
+        ? joinedAt.toDateString()
+        : '2nd Aug 2025';
+    } catch (error) {
+      // fallback if fetch fails completely
+      document.getElementById('userName').innerText = 'James Charlie';
+      document.getElementById('joinedDate').innerText = '2nd Aug 2025';
+    }
   }
+  
   
   // ========================== HOLDINGS & DONUT ========================
   async function fetchHoldings() {
     const res = await fetch('/api/stocks/holdings');
     const data = await res.json();
+  
     const holdingsList = document.getElementById('holdingsList');
+    const donutDetails = document.getElementById('donutDetails');
+    const donutCanvas = document.getElementById('donutChart');
   
     const labels = [];
     const values = [];
+    const backgroundColors = [];
   
     holdingsList.innerHTML = '';
-    data.forEach(h => {
+    donutDetails.innerHTML = '';
+  
+    data.forEach((h, i) => {
       const profitPercent = (((h.current_price - h.avg_buy_price) / h.avg_buy_price) * 100).toFixed(2);
+      
       holdingsList.innerHTML += `<li>${h.symbol}: ${h.quantity} — ${profitPercent}%</li>`;
+      
       labels.push(h.symbol);
       values.push(h.quantity);
+      
+      // Generate a color dynamically
+      const color = getRandomColor();
+      backgroundColors.push(color);
+  
+      // Create donut legend item
+      donutDetails.innerHTML += `
+        <div class="legend-item">
+          <div class="legend-color" style="background: ${color}"></div>
+          ${h.symbol} (${h.quantity} shares)
+        </div>`;
     });
   
-    new Chart(document.getElementById('donutChart'), {
-      type: 'doughnut',
+    // Destroy existing chart if exists (avoid overlaying charts)
+    if (window.donutChartInstance) {
+      window.donutChartInstance.destroy();
+    }
+  
+    // Draw donut chart
+    window.donutChartInstance = new Chart(donutCanvas, {
+      type: 'pie',
       data: {
         labels,
         datasets: [{
           label: 'Holdings Distribution',
           data: values,
-          backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF']
+          backgroundColor: backgroundColors
         }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false } // We show custom legend
+        }
       }
     });
+  }
+  
+  // Utility to generate random pastel colors
+  function getRandomColor() {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 70%)`;
   }
   
  
@@ -70,38 +119,48 @@ async function fetchUserData() {
     const holdings = await res.json();
   
     const labels = [];
-    const datasets = [];
+    const performanceData = [];
   
-    for (let d = 6; d >= 0; d--) {
-      const day = new Date();
-      day.setDate(day.getDate() - d);
-      labels.push(day.toISOString().split('T')[0]);
+    for (let h = 6; h >= 0; h--) {
+      const hour = new Date();
+      hour.setHours(hour.getHours() - h);
+  
+      labels.push(`${hour.getHours()}:00`);
+  
+      let totalInvested = 0;
+      let totalCurrentValue = 0;
+  
+      holdings.forEach(stock => {
+        const quantity = stock.quantity;
+        const avgBuy = stock.avg_buy_price;
+  
+        // Simulate price at that hour (±2% fluctuation)
+        const fluctuation = 1 + ((Math.random() - 0.5) * 0.04); // ±2%
+        const simulatedPrice = stock.current_price * fluctuation;
+  
+        totalInvested += quantity * avgBuy;
+        totalCurrentValue += quantity * simulatedPrice;
+      });
+  
+      const plPercent = ((totalCurrentValue - totalInvested) / totalInvested) * 100;
+      performanceData.push(plPercent.toFixed(2));
     }
   
-    holdings.forEach(stock => {
-      let price = parseFloat(stock.current_price);
-      const prices = [];
+    // Render chart
+    const ctx = document.getElementById('lineChart').getContext('2d');
+    if (window.lineChartInstance) window.lineChartInstance.destroy();
   
-      for (let i = 0; i < 7; i++) {
-        const fluctuation = (Math.random() - 0.5) * 2;
-        price += fluctuation;
-        prices.push(price.toFixed(2));
-      }
-  
-      datasets.push({
-        label: stock.symbol,
-        data: prices,
-        borderColor: getRandomColor(),
-        fill: false,
-        tension: 0.3
-      });
-    });
-  
-    new Chart(document.getElementById('lineChart'), {
+    window.lineChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
-        datasets
+        datasets: [{
+          label: 'Portfolio P/L (%)',
+          data: performanceData,
+          borderColor: '#2ecc71',
+          fill: false,
+          tension: 0.3
+        }]
       },
       options: {
         responsive: true,
@@ -116,16 +175,17 @@ async function fetchUserData() {
         },
         scales: {
           y: {
-            beginAtZero: false,
-            title: { display: true, text: '₹ Price' }
+            title: { display: true, text: 'Net P/L (%)' },
+            beginAtZero: false
           },
           x: {
-            title: { display: true, text: 'Date' }
+            title: { display: true, text: 'Hour of Day' }
           }
         }
       }
     });
   }
+  
   
   // ========================== UTIL ============================
   function getRandomColor() {
@@ -144,9 +204,8 @@ async function fetchUserData() {
       sectorMap[sector] += stock.quantity;
     });
   
-    const canvas = document.createElement('canvas');
-    canvas.id = 'sectorBarChart';
-    document.querySelector('.chart-section').appendChild(canvas);
+    const canvas = document.getElementById('sectorBarChart');
+
   
     new Chart(canvas.getContext('2d'), {
       type: 'bar',
@@ -185,9 +244,8 @@ async function fetchUserData() {
       playTypeMap[type] += stock.quantity;
     });
   
-    const canvas = document.createElement('canvas');
-    canvas.id = 'typeBarChart';
-    document.querySelector('.chart-section').appendChild(canvas);
+    const canvas = document.getElementById('typeBarChart');
+
   
     new Chart(canvas.getContext('2d'), {
       type: 'bar',
@@ -215,7 +273,113 @@ async function fetchUserData() {
     });
   }
   
+  // ================== NET WORTH TREND EVERY 7 HOURS ==================
+  async function fetchHourlyNetTrend() {
+    const res = await fetch('/api/stocks/transactions');
+    const transactions = await res.json();
   
+    if (!transactions.length) return;
+  
+    const now = new Date();
+    const hours = [];
+  
+    for (let i = 6; i >= 0; i--) {
+      const start = new Date(now);
+      start.setHours(start.getHours() - i);
+      start.setMinutes(0, 0, 0); // align to start of hour
+      const label = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      hours.push({ time: start, label, net: 0 });
+    }
+  
+    let holdings = {};
+    let realizedProfit = 0;
+    let spent = 0;
+  
+    transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  
+    let hourIndex = 0;
+  
+    for (const tx of transactions) {
+      const txTime = new Date(tx.timestamp);
+  
+      while (
+        hourIndex < hours.length - 1 &&
+        txTime > hours[hourIndex + 1].time
+      ) {
+        hours[hourIndex].net = calcNetWorth(holdings, realizedProfit, spent);
+        hourIndex++;
+      }
+  
+      const qty = tx.quantity;
+      const price = tx.price;
+  
+      if (tx.type === 'BUY') {
+        spent += qty * price;
+        holdings[tx.symbol] = (holdings[tx.symbol] || 0) + qty;
+      } else if (tx.type === 'SELL') {
+        const avgBuy = tx.avg_price || price;
+        realizedProfit += (price - avgBuy) * qty;
+        holdings[tx.symbol] = (holdings[tx.symbol] || 0) - qty;
+      }
+    }
+  
+    // For remaining hours
+    for (; hourIndex < hours.length; hourIndex++) {
+      hours[hourIndex].net = calcNetWorth(holdings, realizedProfit, spent);
+    }
+  
+    renderHourlyChart(hours);
+  }
+  
+  function calcNetWorth(holdings, profit, spent) {
+    let value = 0;
+    for (const symbol in holdings) {
+      const qty = holdings[symbol];
+      const currentPrice = getCurrentPrice(symbol); // Replace if needed
+      value += qty * currentPrice;
+    }
+    return (value + profit - spent).toFixed(2);
+  }
+  
+  function getCurrentPrice(symbol) {
+    // Replace with real-time data or backend if available
+    return 100 + Math.random() * 100;
+  }
+  
+  function renderHourlyChart(dataPoints) {
+    const canvas = document.getElementById('netWorthChart');
+    if (window.hourChartInstance) window.hourChartInstance.destroy();
+  
+    const ctx = canvas.getContext('2d');
+    window.hourChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dataPoints.map(p => p.label),
+        datasets: [{
+          label: 'Net Worth (Hourly)',
+          data: dataPoints.map(p => p.net),
+          borderColor: '#1abc9c',
+          backgroundColor: 'rgba(26, 188, 156, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            title: { display: true, text: '₹ Net Worth' },
+            beginAtZero: false
+          },
+          x: {
+            title: { display: true, text: 'Last 7 Hours' }
+          }
+        }
+      }
+    });
+  }
+  
+
   // ========================== RUN =============================
   fetchUserData();
   fetchHoldings();
@@ -223,5 +387,7 @@ async function fetchUserData() {
   fetchPerformanceChart();
   renderSectorHoldingsBarChart();
   renderTypeOfPlayBarChart();
+  fetchHourlyNetTrend();
+
   
   
