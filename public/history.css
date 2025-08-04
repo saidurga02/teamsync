@@ -15,7 +15,7 @@ body {
   #historyList {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 30px 20px; /* row gap, column gap */
+    gap: 50px 20px; /* row gap, column gap */
     padding: 20px;
   }
   
@@ -76,6 +76,7 @@ body {
     max-width: 700px;
     margin: auto;
     position: relative;
+    
   }
   
   .modal-content h3 {
@@ -109,5 +110,6 @@ body {
   
   #modalChart {
     margin-top: 20px;
+    
   }
     

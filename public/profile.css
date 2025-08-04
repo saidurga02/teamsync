@@ -11,15 +11,16 @@
     outline: none !important;
     box-shadow: none !important;
   }
-  .donut-section,
-.bar-wrapper,
+  section,
 .chart-section,
-.sold-section {
-  background: transparent;
+.donut-section,
+.bar-wrapper {
+  background: none;
   box-shadow: none;
   padding: 0;
   border: none;
 }
+
 
 body {
     margin: 0;

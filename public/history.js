@@ -11,7 +11,12 @@ const sampleHoldings = [
     { symbol: 'KO', name: 'Coca-Cola', sector: 'Consumer', type_of_play: 'Swing', volume: 6400000, market_cap: 260000000000 },
     { symbol: 'VZ', name: 'Verizon', sector: 'Telecom', type_of_play: 'Intraday', volume: 6200000, market_cap: 135000000000 },
     { symbol: 'WMT', name: 'Walmart', sector: 'Retail', type_of_play: 'Long-Term', volume: 5800000, market_cap: 430000000000 },
-    { symbol: 'JPM', name: 'JPMorgan', sector: 'Finance', type_of_play: 'Swing', volume: 7500000, market_cap: 560000000000 }
+    { symbol: 'JPM', name: 'JPMorgan', sector: 'Finance', type_of_play: 'Swing', volume: 7500000, market_cap: 560000000000 },
+    { symbol: 'HSBC', name: 'HSBC Holdings plc', sector: 'Banking', type_of_play: 'Long-Term', volume: 800000, market_cap: 160000000000 },
+    { symbol: 'JSWSTEEL', name: 'JSW Steel Ltd.', sector: 'Metals', type_of_play: 'Swing', volume: 950000, market_cap: 20000000000 },
+    { symbol: 'TCS', name: 'Tata Consultancy Services', sector: 'IT', type_of_play: 'Long-Term', volume: 1100000, market_cap: 150000000000 },
+    { symbol: 'INFY', name: 'Infosys Ltd.', sector: 'IT', type_of_play: 'Swing', volume: 1000000, market_cap: 90000000000 },
+    { symbol: 'RELIANCE', name: 'Reliance Industries', sector: 'Energy', type_of_play: 'Long-Term', volume: 1800000, market_cap: 230000000000 }
   ];
   
   let holdings = JSON.parse(localStorage.getItem('holdings')) || {};
@@ -62,16 +67,26 @@ const sampleHoldings = [
     historyList.appendChild(div);
   });
   
-  function openModal(stock) {
+  async function openModal(stock) {
     selectedStock = stock;
+  
+    // Populate static fields
     document.getElementById('modalSymbol').innerText = `${stock.name} (${stock.symbol})`;
     document.getElementById('modalSector').innerText = stock.sector;
     document.getElementById('modalPlay').innerText = stock.type_of_play;
     document.getElementById('modalVolume').innerText = formatBigNumber(stock.volume);
     document.getElementById('modalMarketCap').innerText = '₹' + formatBigNumber(stock.market_cap);
-    document.getElementById("modalCurrentPrice").textContent = stock.current_price;
-
   
+    try {
+      const res = await fetch(`/api/stocks/${stock.symbol}`);
+      const stockDetails = await res.json();
+      document.getElementById("modalCurrentPrice").textContent = `₹${stockDetails.current_price}`;
+    } catch (err) {
+      document.getElementById("modalCurrentPrice").textContent = 'Unavailable';
+      console.error("Error fetching price:", err);
+    }
+  
+    // Chart logic
     const history = genHistory();
     const labels = history.map(p => p.year);
     const prices = history.map(p => p.price);
@@ -104,21 +119,30 @@ const sampleHoldings = [
     modal.style.display = 'flex';
   }
   
-  document.getElementById('buyBtn').onclick = function () {
+  document.getElementById('buyBtn').onclick = async function () {
     const qty = parseInt(document.getElementById('buyQty').value);
     const price = parseFloat(document.getElementById('buyPrice').value);
     if (isNaN(qty) || isNaN(price)) return alert("Invalid input");
   
-    const cost = qty * price;
-    if (netWorth < cost) return alert(`Not enough funds. You need ₹${cost}, have ₹${netWorth}.`);
+    try {
+      const res = await fetch(`/api/stocks/${selectedStock.symbol}`);
+      const stockData = await res.json();
+      const currentPrice = parseFloat(stockData.current_price);
   
-    fetch('/api/stocks/buy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
-    }).then(() => {
+      if (price < currentPrice) {
+        return alert(`You can only buy at or above the current market price (₹${currentPrice}).`);
+      }
+  
+      const cost = qty * price;
+      if (netWorth < cost) return alert(`Not enough funds. You need ₹${cost}, have ₹${netWorth}.`);
+  
+      await fetch('/api/stocks/buy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
+      });
+  
       if (!holdings[selectedStock.symbol]) holdings[selectedStock.symbol] = { quantity: 0, avgPrice: 0 };
-  
       const current = holdings[selectedStock.symbol];
       const totalQty = current.quantity + qty;
       current.avgPrice = ((current.avgPrice * current.quantity) + (price * qty)) / totalQty;
@@ -127,10 +151,14 @@ const sampleHoldings = [
       netWorth -= cost;
       persistData();
       alert(`Bought ${qty} shares of ${selectedStock.symbol}`);
-    });
+    } catch (err) {
+      console.error('Buy failed:', err);
+      alert('Error fetching current price.');
+    }
   };
+   
   
-  document.getElementById('sellBtn').onclick = function () {
+  document.getElementById('sellBtn').onclick = async function () {
     const qty = parseInt(document.getElementById('sellQty').value);
     const price = parseFloat(document.getElementById('sellPrice').value);
     if (isNaN(qty) || isNaN(price)) return alert("Invalid input");
@@ -138,17 +166,31 @@ const sampleHoldings = [
     const current = holdings[selectedStock.symbol];
     if (!current || current.quantity < qty) return alert("You don't have enough shares.");
   
-    fetch('/api/stocks/sell', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
-    }).then(() => {
+    try {
+      const res = await fetch(`/api/stocks/${selectedStock.symbol}`);
+      const stockData = await res.json();
+      const currentPrice = parseFloat(stockData.current_price);
+  
+      if (price > currentPrice) {
+        return alert(`You can only sell at or below the current market price (₹${currentPrice}).`);
+      }
+  
+      await fetch('/api/stocks/sell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
+      });
+  
       current.quantity -= qty;
       if (current.quantity === 0) current.avgPrice = 0;
   
       netWorth += qty * price;
       persistData();
       alert(`Sold ${qty} shares of ${selectedStock.symbol}`);
-    });
+    } catch (err) {
+      console.error('Sell failed:', err);
+      alert('Error fetching current price.');
+    }
   };
+  
   

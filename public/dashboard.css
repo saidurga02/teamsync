@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #0a192f;
+  background-color: #12294d;
   color: #ffffff;
 }
 
@@ -32,7 +32,14 @@ body {
   background-color: #1e2f40;
 }
 
-
+#menuBtn {
+  font-size: 24px;
+  background: none;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
 
 .content {
   margin-left: 20px;
@@ -78,9 +85,9 @@ body {
 .stocks-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #0d1b2a;
+  background-color: #12294d;
   color: #ffffff;
-  border: 1px solid #1b263b;
+  border: 1px solid #12294d;
 }
 
 .stocks-table th, .stocks-table td {
@@ -90,7 +97,7 @@ body {
 }
 
 .stocks-table th {
-  background-color: #1b263b;
+  background-color: #12294d;
 }
 
 .stocks-table tr:hover {
