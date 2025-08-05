@@ -2,92 +2,97 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// POST /api/chat
 router.post('/', async (req, res) => {
   const { message } = req.body;
+  if (!message) {
+    return res.json({ reply: "Please enter a message." });
+  }
+
   const lowerMsg = message.toLowerCase();
 
   try {
-    // =====================
-    // 1. Simple Stock Advice
-    // =====================
-    if (lowerMsg.startsWith('should i buy')) {
-      const symbol = lowerMsg.replace('should i buy', '').trim().toUpperCase();
-      if (!symbol) {
+    // Handle "which stock should I buy" first to avoid falling into the 'should I buy' branch
+    if (lowerMsg.includes('which stock') || lowerMsg.includes('what stock')) {
+      const [rows] = await db.query(`
+        SELECT 
+          s.symbol,
+          ROUND(((AVG(t.price) - h.avg_buy_price) / h.avg_buy_price) * 100, 2) AS profit_percent
+        FROM transactions t
+        JOIN stocks s ON t.stock_id = s.stock_id
+        JOIN holdings h ON h.stock_id = s.stock_id
+        WHERE t.type = 'SELL'
+        GROUP BY s.symbol, h.avg_buy_price
+        ORDER BY profit_percent DESC
+        LIMIT 1
+      `);
+
+      if (rows.length > 0) {
+        return res.json({
+          reply: `📈 Based on your transaction history, ${rows[0].symbol} has given the highest returns (${rows[0].profit_percent}%). You might consider buying it.`
+        });
+      } else {
+        // Fallback: suggest based on current holdings if no sell history
+        const [holdings] = await db.query(`
+          SELECT s.symbol,
+                 ROUND(((s.current_price - h.avg_buy_price) / h.avg_buy_price) * 100, 2) AS potential_gain
+          FROM holdings h
+          JOIN stocks s ON h.stock_id = s.stock_id
+          ORDER BY potential_gain DESC
+          LIMIT 1
+        `);
+
+        if (holdings.length > 0) {
+          return res.json({
+            reply: `📊 Based on current prices, ${holdings[0].symbol} shows the highest potential gain (${holdings[0].potential_gain}%).`
+          });
+        } else {
+          return res.json({
+            reply: "I couldn't find enough data to suggest a stock."
+          });
+        }
+      }
+    }
+
+    // Handle "should I buy <symbol>"
+    if (lowerMsg.includes('should i buy')) {
+      const stockSymbol = lowerMsg.split('buy')[1]?.trim().toUpperCase();
+      if (!stockSymbol) {
         return res.json({ reply: "Please specify the stock symbol." });
       }
 
       const [rows] = await db.query(
-        `SELECT * FROM stocks WHERE symbol = ?`,
-        [symbol]
+        `SELECT AVG(price) AS avg_buy, 
+                (SELECT current_price FROM stocks WHERE symbol = ?) AS current_price
+         FROM transactions t
+         JOIN stocks s ON t.stock_id = s.stock_id
+         WHERE s.symbol = ? AND t.type = 'BUY'`,
+        [stockSymbol, stockSymbol]
       );
 
-      if (!rows.length) {
-        return res.json({ reply: `I couldn't find any data for ${symbol}.` });
+      if (!rows.length || !rows[0].avg_buy) {
+        return res.json({ reply: `You don't have any history for ${stockSymbol}. Do more research before buying.` });
       }
 
-      const stock = rows[0];
-      let advice = '';
+      const avgBuy = parseFloat(rows[0].avg_buy);
+      const currentPrice = parseFloat(rows[0].current_price);
 
-      if (stock.current_price < stock.avg_daily_price) {
-        advice = `✅ ${symbol} is trading below its average daily price — could be a good entry point.`;
+      if (isNaN(avgBuy) || isNaN(currentPrice)) {
+        return res.json({ reply: `Unable to get price data for ${stockSymbol}.` });
+      }
+
+      if (currentPrice < avgBuy) {
+        return res.json({ reply: `✅ ${stockSymbol} is currently below your average buy price. Could be a good entry.` });
       } else {
-        advice = `⚠️ ${symbol} is above its average daily price — you might want to wait.`;
+        return res.json({ reply: `⚠️ ${stockSymbol} is above your average buy price. You might wait for a dip.` });
       }
-
-      return res.json({ reply: advice });
     }
 
-    // ====================================
-    // 2. Recommend Most Profitable (History)
-    // ====================================
-    if (
-      lowerMsg.includes('which stock') &&
-      lowerMsg.includes('buy') &&
-      lowerMsg.includes('profit')
-    ) {
-      const [rows] = await db.query(`
-        SELECT 
-          s.symbol,
-          AVG(CASE 
-                WHEN t.type = 'SELL' THEN (t.price - h.avg_buy_price) / h.avg_buy_price * 100
-                ELSE NULL
-              END) AS avg_return
-        FROM transactions t
-        JOIN stocks s ON t.stock_id = s.stock_id
-        LEFT JOIN holdings h ON t.stock_id = h.stock_id
-        GROUP BY s.symbol
-        HAVING avg_return IS NOT NULL
-        ORDER BY avg_return DESC
-        LIMIT 3
-      `);
-
-      if (!rows.length) {
-        return res.json({ reply: "I couldn't find enough transaction data to make a recommendation." });
-      }
-
-      const suggestions = rows.map(s => {
-        const gain = parseFloat(s.avg_return) || 0;
-        return `${s.symbol} (+${gain.toFixed(2)}% avg return)`;
-      });
-
-      return res.json({
-        reply: `📊 Based on your historical transactions, you might consider: ${suggestions.join(', ')}`
-      });
-    }
-
-    // ===========================
-    // 3. Default Fallback
-    // ===========================
-    return res.json({
-      reply: "🤖 I can help with stock advice. Try asking: 'Should I buy TCS?' or 'Which stock should I buy to get more profit?'"
-    });
+    // Default fallback
+    return res.json({ reply: "I'm not sure how to respond to that. Try asking about stocks to buy." });
 
   } catch (err) {
-    console.error("DB error fetching stock advice:", err);
-    return res.json({
-      reply: "⚠️ Error analyzing stock data."
-    });
+    console.error("Chatbot error:", err);
+    return res.json({ reply: "⚠️ Error processing your request." });
   }
 });
 
