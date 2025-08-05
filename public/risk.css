@@ -13,6 +13,8 @@ h1 {
   padding: 10px;
   font-size: 16px;
   margin: 5px;
+  
+  border-radius: 15px; 
   width: 200px;
 }
 
@@ -23,6 +25,7 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+ 
   margin-left: 10px;
 }
 

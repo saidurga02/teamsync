@@ -1,5 +1,8 @@
 const apiKey = '7abdfcf528aa41648308ffc30ff7ed35'; // Replace with your actual TwelveData API key
 
+// Dummy list of user's current holdings (simulate your backend)
+const userHoldings = ['TCS', 'AAPL', 'MSFT']; // Symbols user currently owns
+
 async function getRecommendation() {
   const age = parseInt(document.getElementById('age').value);
   const salary = parseInt(document.getElementById('salary').value);
@@ -17,7 +20,7 @@ async function getRecommendation() {
     const prices = {};
 
     for (let interval of intervals) {
-      const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&outputsize=130&apikey=${apiKey}`);
+      const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&outputsize=260&apikey=${apiKey}`);
       const data = await res.json();
 
       if (data.status === 'error') {
@@ -31,7 +34,7 @@ async function getRecommendation() {
         return;
       }
 
-      let daysAgo = {
+      const daysAgo = {
         '1month': 22,
         '6month': 130,
         '1year': 260
@@ -43,21 +46,61 @@ async function getRecommendation() {
       prices[interval] = { recent, past, change };
     }
 
-    // Simple recommendation logic
-    let recommendation = 'Hold';
     const oneMonthChange = parseFloat(prices['1month'].change);
     const sixMonthChange = parseFloat(prices['6month'].change);
     const oneYearChange = parseFloat(prices['1year'].change);
 
+    // Age-based risk tolerance
     const riskTolerance = age < 30 ? 'High' : age < 50 ? 'Medium' : 'Low';
+
+    // Salary-based budget
     const budget = salary * 0.2;
 
-    if (oneMonthChange > 5 && sixMonthChange > 10 && oneYearChange > 15) {
-      recommendation = riskTolerance === 'High' ? 'Buy' : 'Hold';
-    } else if (oneMonthChange < -5 || oneYearChange < -10) {
-      recommendation = 'Sell';
+    // === Check if user owns this stock ===
+    const hasStock = userHoldings.includes(symbol);
+
+    // === RECOMMENDATION LOGIC ===
+    let recommendation = 'Hold';
+    let reason = 'The stock is stable, and there is no clear trend for action.';
+    let extraAdvice = '';
+
+    if (hasStock) {
+      // Logic when user already holds the stock
+      if (oneMonthChange < -5 || oneYearChange < -10) {
+        recommendation = 'Sell';
+        reason = 'You hold this stock and it has shown significant decline.';
+      } else if (oneMonthChange > 5 && sixMonthChange > 10 && oneYearChange > 15) {
+        recommendation = 'Hold or Sell for profit';
+        reason = 'You already hold this, and it is performing well — consider partial selling for profit.';
+      } else {
+        recommendation = 'Hold';
+        reason = 'Stock is performing stably in your holdings.';
+      }
+    } else {
+      // Logic when user does NOT hold the stock
+      if (oneMonthChange > 5 && sixMonthChange > 10 && oneYearChange > 15) {
+        recommendation = riskTolerance === 'High' ? 'Buy' : 'Watch';
+        reason = 'Strong growth across time frames — might be a good entry.';
+      } else if (oneMonthChange < -5 || oneYearChange < -10) {
+        recommendation = 'Wait';
+        reason = 'Stock is dropping — not ideal for new entry.';
+      } else {
+        recommendation = 'Watch';
+        reason = 'Stock is stable, but no major movement.';
+      }
+
+      extraAdvice = `
+        <p><strong>You don't currently hold this stock.</strong></p>
+        <p>Based on your age (${age}) and salary (₹${salary}):</p>
+        <ul>
+          <li>Risk Profile: <strong>${riskTolerance}</strong></li>
+          <li>Suggested investment budget (20% of monthly): <strong>₹${budget}</strong></li>
+          <li>${generateEntryAdvice(riskTolerance, oneMonthChange, sixMonthChange, oneYearChange)}</li>
+        </ul>
+      `;
     }
 
+    // === Final Output ===
     output.innerHTML = `
       <h3>${symbol} Analysis</h3>
       <p><strong>Age:</strong> ${age} | <strong>Salary:</strong> ₹${salary} | <strong>Risk:</strong> ${riskTolerance}</p>
@@ -68,9 +111,29 @@ async function getRecommendation() {
       <p><strong>1 Year:</strong> ${prices['1year'].change}%</p>
       <hr>
       <p><strong>Recommendation:</strong> <span style="color:blue">${recommendation}</span></p>
+      <p><strong>Reason:</strong> ${reason}</p>
+      ${extraAdvice}
     `;
   } catch (error) {
     output.textContent = 'Error fetching data.';
     console.error(error);
   }
+}
+
+// Personalized entry advice based on risk and performance
+function generateEntryAdvice(risk, m1, m6, y1) {
+  if (risk === 'High') {
+    if (m1 < 0 && y1 > 10) return "You can consider buying now – this may be a good dip opportunity.";
+    if (m1 > 3 && m6 > 5) return "Stock is trending up. Enter now to ride the momentum.";
+    return "Monitor for a slight dip or correction, then enter.";
+  }
+  if (risk === 'Medium') {
+    if (m1 > 3 && y1 > 10) return "Consider entering with a small investment and increase gradually.";
+    return "Wait for more stable trend or correction before entering.";
+  }
+  if (risk === 'Low') {
+    if (m6 > 5 && y1 > 10) return "If stability continues, consider entering next month.";
+    return "Too risky now. Reassess next month.";
+  }
+  return "Monitor the market for better entry timing.";
 }
