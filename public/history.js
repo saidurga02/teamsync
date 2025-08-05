@@ -19,7 +19,7 @@ const sampleHoldings = [
   { symbol: 'RELIANCE', name: 'Reliance Industries', sector: 'Energy', type_of_play: 'Long-Term', volume: 1800000, market_cap: 230000000000 }
 ];
 
-// === Local storage data ===
+// Local storage
 let holdings = JSON.parse(localStorage.getItem('holdings')) || {};
 let netWorth = parseFloat(localStorage.getItem('netWorth')) || 100000;
 document.getElementById('netValue').innerText = netWorth.toFixed(2);
@@ -47,13 +47,49 @@ function genHistory() {
   return data;
 }
 
-// === Bubble chart with bigger size and filled logos ===
+// === Bubble Chart with Aqua Tooltip ===
 function createBubbleChart() {
   const width = 1200;
   const height = 700;
+
   const svg = d3.select("#bubbleChart").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("overflow", "visible");
+
+  // Tooltip creation
+  const tooltip = d3.select("body").append("div")
+    .attr("id", "bubbleTooltip")
+    .style("position", "absolute")
+    .style("background", "rgba(0,198,255,0.95)")
+    .style("color", "#fff")
+    .style("padding", "8px 12px")
+    .style("border-radius", "8px")
+    .style("box-shadow", "0 4px 12px rgba(0,0,0,0.3)")
+    .style("pointer-events", "none")
+    .style("font-size", "14px")
+    .style("font-weight", "500")
+    .style("opacity", 0);
+
+  // Gradient definitions
+  const defs = svg.append("defs");
+  const gradients = [
+    ["#B5FFFC", "#A9F5FF"],
+    ["#D7FFFE", "#E3FDFD"],
+    ["#BEE3F8", "#C3DAFE"],
+    ["#CFFAFE", "#E0F2FE"],
+    ["#D6EFFF", "#BEE9FF"],
+    ["#E0F7FA", "#B2EBF2"]
+  ];
+
+  sampleHoldings.forEach((d, i) => {
+    const grad = defs.append("linearGradient")
+      .attr("id", `grad-${d.symbol}`)
+      .attr("x1", "0%").attr("y1", "0%")
+      .attr("x2", "100%").attr("y2", "100%");
+    grad.append("stop").attr("offset", "0%").attr("stop-color", gradients[i % gradients.length][0]);
+    grad.append("stop").attr("offset", "100%").attr("stop-color", gradients[i % gradients.length][1]);
+  });
 
   const pack = d3.pack()
     .size([width, height])
@@ -69,31 +105,57 @@ function createBubbleChart() {
     .enter().append("g")
     .attr("transform", d => `translate(${d.x},${d.y})`);
 
-  node.append("clipPath")
-    .attr("id", d => `clip-${d.data.symbol}`)
-    .append("circle")
+  // Circles
+  node.append("circle")
+    .attr("r", 0)
+    .style("fill", d => `url(#grad-${d.data.symbol})`)
+    .style("stroke", "#fff")
+    .style("stroke-width", 2)
+    .style("filter", "drop-shadow(0 4px 10px rgba(0,0,0,0.3))")
+    .transition()
+    .duration(800)
     .attr("r", d => d.r);
 
-  node.append("circle")
-    .attr("r", d => d.r)
-    .style("fill", "#eee")
-    .style("stroke", "#083d77")
-    .style("stroke-width", 2)
-    .on("click", (event, d) => openModal(d.data));
-
+  // Logos
   node.append("image")
     .attr("xlink:href", d => `https://logo.clearbit.com/${d.data.symbol.toLowerCase()}.com`)
-    .attr("x", d => -d.r)
-    .attr("y", d => -d.r)
-    .attr("width", d => d.r * 2)
-    .attr("height", d => d.r * 2)
-    .attr("clip-path", d => `url(#clip-${d.data.symbol})`)
-    .on("click", (event, d) => openModal(d.data));
+    .attr("x", d => -d.r / 2)
+    .attr("y", d => -d.r / 2)
+    .attr("width", d => d.r)
+    .attr("height", d => d.r)
+    .style("clip-path", d => `circle(${d.r / 2}px)`)
+    .style("opacity", 0.85);
+
+  // Hover effect with tooltip
+  node.on("mouseover", function (event, d) {
+    d3.select(this).select("circle")
+      .transition().duration(200)
+      .attr("r", d.r * 1.05)
+      .style("filter", "drop-shadow(0 0 15px rgba(0,198,255,0.9))");
+
+    tooltip
+      .style("opacity", 1)
+      .html(`<b>${d.data.name}</b><br><span style="opacity:0.9">${d.data.symbol}</span>`);
+  })
+  .on("mousemove", function (event) {
+    tooltip
+      .style("left", (event.pageX + 15) + "px")
+      .style("top", (event.pageY - 30) + "px");
+  })
+  .on("mouseout", function (event, d) {
+    d3.select(this).select("circle")
+      .transition().duration(200)
+      .attr("r", d.r)
+      .style("filter", "drop-shadow(0 4px 10px rgba(0,0,0,0.3))");
+
+    tooltip.style("opacity", 0);
+  });
+
+  // Click event
+  node.on("click", (event, d) => openModal(d.data));
 }
 
-
-
-// === Stock modal logic ===
+// === Modal Logic ===
 const modal = document.getElementById('stockModal');
 const spanClose = modal.querySelector('.close');
 let modalChartInstance = null;
@@ -131,8 +193,8 @@ async function openModal(stock) {
       datasets: [{
         label: `${stock.symbol} Price (₹)`,
         data: prices,
-        borderColor: '#2196f3',
-        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+        borderColor: '#00c6ff',
+        backgroundColor: 'rgba(0,198,255,0.1)',
         tension: 0.3
       }]
     }
@@ -141,6 +203,5 @@ async function openModal(stock) {
   modal.style.display = 'flex';
 }
 
-// === Init charts ===
+// Init chart
 createBubbleChart();
-
