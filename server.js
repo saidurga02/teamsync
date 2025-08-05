@@ -28,3 +28,6 @@ app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`)
 
 const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
+
+const riskRoutes = require('./src/routes/risk');
+app.use('/api/risk', riskRoutes);
