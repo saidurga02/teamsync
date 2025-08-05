@@ -6,40 +6,58 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      background-color: #f5f9ff;
     }
 
     .header {
-      background-color:powderblue;
-      color:black;
+      background: linear-gradient(to right, #b6e0fe, #80caff);
+      color: #00334d;
       padding: 20px;
       text-align: center;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .date {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 14px;
+      color: #00334d;
     }
 
     .nav {
-      background-color:powderblue;
+    
       display: flex;
       justify-content: center;
-      
+      padding: 10px 0;
     }
 
     .nav button {
-      background: none;
+      background-color: #ffffff;
       border: none;
-      padding: 10px 25px;
+      padding: 10px 22px;
+      margin: 0 10px;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
-      color:black;
+      color: #0073aa;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-   
+    .nav button:hover {
+      background-color: #0073aa;
+      color: white;
+    }
 
     .content {
       flex-grow: 1;
@@ -55,15 +73,14 @@
 <body>
   <div class="header">
     Hello, James Charlie
+    <div class="date" id="todayDate"></div>
     <div class="nav">
       <button onclick="loadPage('profile.html')">Profile</button>
       <button onclick="loadPage('history.html')">History</button>
       <button onclick="loadPage('dashboard.html')">Invest</button>
-      <button onclick="loadPage('risk.html')">risk</button>
+      <button onclick="loadPage('risk.html')">Risk</button>
     </div>
   </div>
-
-  
 
   <div class="content">
     <iframe id="mainFrame" src="profile.html"></iframe>
@@ -73,6 +90,12 @@
     function loadPage(page) {
       document.getElementById('mainFrame').src = page;
     }
+
+    // Set today's date
+    const dateElem = document.getElementById('todayDate');
+    const today = new Date();
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    dateElem.textContent = today.toLocaleDateString(undefined, options);
   </script>
 </body>
 </html>
