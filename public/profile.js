@@ -40,7 +40,15 @@ async function fetchUserData() {
     data.forEach((h, i) => {
       const profitPercent = (((h.current_price - h.avg_buy_price) / h.avg_buy_price) * 100).toFixed(2);
       
-      holdingsList.innerHTML += `<li>${h.symbol}: ${h.quantity} — ${profitPercent}%</li>`;
+      holdingsList.innerHTML += `
+  <li>
+    <img src="https://logo.clearbit.com/${h.symbol.toLowerCase()}.com" 
+         alt="${h.symbol}" 
+         width="20" height="20" 
+         style="vertical-align:middle; margin-right:8px;" />
+    ${h.symbol}: ${h.quantity} — ${profitPercent}%
+  </li>`;
+
       
       labels.push(h.symbol);
       values.push(h.quantity);
