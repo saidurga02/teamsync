@@ -5,9 +5,18 @@
   <title>Stock Holdings</title>
   <link rel="stylesheet" href="history.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script> <!-- D3.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.1/wordcloud2.min.js"></script> <!-- Word Cloud -->
 </head>
 <body>
   <h2>Net Worth: ₹<span id="netValue"></span></h2>
+
+  <!-- Bubble Chart Section -->
+  <div style="text-align:center; margin-bottom: 50px;">
+    <h2>Company Market Cap Bubble Chart</h2>
+    <div id="bubbleChart"></div>
+  </div>
+
   
   <div id="historyList"></div>
 
@@ -21,7 +30,6 @@
       <p>Volume: <span id="modalVolume"></span></p>
       <p>Market Cap: <span id="modalMarketCap"></span></p>
       <p>Current Price: ₹<span id="modalCurrentPrice"></span></p>
-
 
       <canvas id="modalChart" width="600" height="300"></canvas>
 
