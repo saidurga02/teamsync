@@ -71,7 +71,7 @@ async function fetchHoldings() {
 
   // Draw donut chart
   window.donutChartInstance = new Chart(donutCanvas, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
       labels,
       datasets: [{
@@ -81,6 +81,7 @@ async function fetchHoldings() {
       }]
     },
     options: {
+      cutout: '60%',
       plugins: {
         legend: { display: false } // We show custom legend
       }
