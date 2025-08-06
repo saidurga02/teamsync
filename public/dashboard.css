@@ -87,7 +87,7 @@ body {
   border-collapse: collapse;
   background-color: #12294d;
   color: #ffffff;
-  border: 1px solid #12294d;
+  border: 1px solid #1b263b;
 }
 
 .stocks-table th, .stocks-table td {
@@ -97,7 +97,7 @@ body {
 }
 
 .stocks-table th {
-  background-color: #12294d;
+  background-color: #1b263b;
 }
 
 .stocks-table tr:hover {

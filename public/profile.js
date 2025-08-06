@@ -1,6 +1,7 @@
 // ========================== USER INFO ==============================
 async function fetchUserData() {
   const userId = 1;
+
   try {
     const userRes = await fetch(`/api/users/${userId}`);
     const user = await userRes.json();
@@ -13,13 +14,12 @@ async function fetchUserData() {
     document.getElementById('joinedDate').innerText = isValidDate
       ? joinedAt.toDateString()
       : '2nd Aug 2025';
+
   } catch (error) {
-    // fallback if fetch fails completely
     document.getElementById('userName').innerText = 'James Charlie';
     document.getElementById('joinedDate').innerText = '2nd Aug 2025';
   }
 }
-
 
 // ========================== HOLDINGS & DONUT ========================
 async function fetchHoldings() {
@@ -37,27 +37,21 @@ async function fetchHoldings() {
   holdingsList.innerHTML = '';
   donutDetails.innerHTML = '';
 
-  data.forEach((h, i) => {
+  data.forEach((h) => {
     const profitPercent = (((h.current_price - h.avg_buy_price) / h.avg_buy_price) * 100).toFixed(2);
-    
-    holdingsList.innerHTML += `
-<li>
-  <img src="https://logo.clearbit.com/${h.symbol.toLowerCase()}.com" 
-       alt="${h.symbol}" 
-       width="20" height="20" 
-       style="vertical-align:middle; margin-right:8px;" />
-  ${h.symbol}: ${h.quantity} — ${profitPercent}%
-</li>`;
 
-    
+    holdingsList.innerHTML += `
+      <li>
+        <img src="https://logo.clearbit.com/${h.symbol.toLowerCase()}.com" alt="${h.symbol}" width="20" height="20" style="vertical-align:middle; margin-right:8px;" />
+        ${h.symbol}: ${h.quantity} — ${profitPercent}%
+      </li>`;
+
     labels.push(h.symbol);
     values.push(h.quantity);
-    
-    // Generate a color dynamically
-    const color = getRandomColor();
+
+    const color = getRandomPastelColor();
     backgroundColors.push(color);
 
-    // Create donut legend item
     donutDetails.innerHTML += `
       <div class="legend-item">
         <div class="legend-color" style="background: ${color}"></div>
@@ -65,12 +59,8 @@ async function fetchHoldings() {
       </div>`;
   });
 
-  // Destroy existing chart if exists (avoid overlaying charts)
-  if (window.donutChartInstance) {
-    window.donutChartInstance.destroy();
-  }
+  if (window.donutChartInstance) window.donutChartInstance.destroy();
 
-  // Draw donut chart
   window.donutChartInstance = new Chart(donutCanvas, {
     type: 'pie',
     data: {
@@ -83,20 +73,17 @@ async function fetchHoldings() {
     },
     options: {
       plugins: {
-        legend: { display: false } // We show custom legend
+        legend: { display: false }
       }
     }
   });
 }
 
-// Utility to generate random pastel colors
-function getRandomColor() {
+// Utility to generate random pastel color
+function getRandomPastelColor() {
   const hue = Math.floor(Math.random() * 360);
   return `hsl(${hue}, 70%, 70%)`;
 }
-
-
-
 
 // ========================= SOLD HISTORY TABLE ==========================
 async function fetchSoldHistory() {
@@ -116,8 +103,7 @@ async function fetchSoldHistory() {
           <td>${t.quantity}</td>
           <td>${pl}%</td>
           <td>${new Date(t.timestamp).toLocaleString()}</td>
-        </tr>
-      `;
+        </tr>`;
     });
 }
 
@@ -132,29 +118,23 @@ async function fetchPerformanceChart() {
   for (let h = 6; h >= 0; h--) {
     const hour = new Date();
     hour.setHours(hour.getHours() - h);
-
     labels.push(`${hour.getHours()}:00`);
 
     let totalInvested = 0;
     let totalCurrentValue = 0;
 
     holdings.forEach(stock => {
-      const quantity = stock.quantity;
-      const avgBuy = stock.avg_buy_price;
-
-      // Simulate price at that hour (±2% fluctuation)
       const fluctuation = 1 + ((Math.random() - 0.5) * 0.04); // ±2%
       const simulatedPrice = stock.current_price * fluctuation;
 
-      totalInvested += quantity * avgBuy;
-      totalCurrentValue += quantity * simulatedPrice;
+      totalInvested += stock.quantity * stock.avg_buy_price;
+      totalCurrentValue += stock.quantity * simulatedPrice;
     });
 
     const plPercent = ((totalCurrentValue - totalInvested) / totalInvested) * 100;
     performanceData.push(plPercent.toFixed(2));
   }
 
-  // Render chart
   const ctx = document.getElementById('lineChart').getContext('2d');
   if (window.lineChartInstance) window.lineChartInstance.destroy();
 
@@ -194,27 +174,18 @@ async function fetchPerformanceChart() {
   });
 }
 
-
-// ========================== UTIL ============================
-function getRandomColor() {
-  const r = () => Math.floor(Math.random() * 255);
-  return `rgb(${r()}, ${r()}, ${r()})`;
-}
+// ================== BAR CHARTS FOR SECTOR & TYPE ==================
 async function renderSectorHoldingsBarChart() {
   const res = await fetch('/api/stocks/holdings');
   const data = await res.json();
 
   const sectorMap = {};
-
   data.forEach(stock => {
     const sector = stock.sector || 'Unknown';
-    if (!sectorMap[sector]) sectorMap[sector] = 0;
-    sectorMap[sector] += stock.quantity;
+    sectorMap[sector] = (sectorMap[sector] || 0) + stock.quantity;
   });
 
   const canvas = document.getElementById('sectorBarChart');
-
-
   new Chart(canvas.getContext('2d'), {
     type: 'bar',
     data: {
@@ -240,28 +211,25 @@ async function renderSectorHoldingsBarChart() {
     }
   });
 }
+
 async function renderTypeOfPlayBarChart() {
   const res = await fetch('/api/stocks/holdings');
   const data = await res.json();
 
-  const playTypeMap = { 'Intraday': 0, 'Swing': 0, 'Long-Term': 0 };
-
+  const typeMap = { 'Intraday': 0, 'Swing': 0, 'Long-Term': 0 };
   data.forEach(stock => {
     const type = stock.type_of_play || 'Unknown';
-    if (!playTypeMap[type]) playTypeMap[type] = 0;
-    playTypeMap[type] += stock.quantity;
+    typeMap[type] = (typeMap[type] || 0) + stock.quantity;
   });
 
   const canvas = document.getElementById('typeBarChart');
-
-
   new Chart(canvas.getContext('2d'), {
     type: 'bar',
     data: {
-      labels: Object.keys(playTypeMap),
+      labels: Object.keys(typeMap),
       datasets: [{
         label: 'Holdings by Type of Play',
-        data: Object.values(playTypeMap),
+        data: Object.values(typeMap),
         backgroundColor: '#FF9F40'
       }]
     },
@@ -292,35 +260,28 @@ async function fetchHourlyNetTrend() {
   const hours = [];
 
   for (let i = 6; i >= 0; i--) {
-    const start = new Date(now);
-    start.setHours(start.getHours() - i);
-    start.setMinutes(0, 0, 0); // align to start of hour
-    const label = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    hours.push({ time: start, label, net: 0 });
+    const hour = new Date(now);
+    hour.setHours(hour.getHours() - i);
+    hour.setMinutes(0, 0, 0);
+    const label = hour.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    hours.push({ time: hour, label, net: 0 });
   }
 
   let holdings = {};
   let realizedProfit = 0;
   let spent = 0;
-
   transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
   let hourIndex = 0;
-
   for (const tx of transactions) {
     const txTime = new Date(tx.timestamp);
-
-    while (
-      hourIndex < hours.length - 1 &&
-      txTime > hours[hourIndex + 1].time
-    ) {
+    while (hourIndex < hours.length - 1 && txTime > hours[hourIndex + 1].time) {
       hours[hourIndex].net = calcNetWorth(holdings, realizedProfit, spent);
       hourIndex++;
     }
 
     const qty = tx.quantity;
     const price = tx.price;
-
     if (tx.type === 'BUY') {
       spent += qty * price;
       holdings[tx.symbol] = (holdings[tx.symbol] || 0) + qty;
@@ -331,7 +292,6 @@ async function fetchHourlyNetTrend() {
     }
   }
 
-  // For remaining hours
   for (; hourIndex < hours.length; hourIndex++) {
     hours[hourIndex].net = calcNetWorth(holdings, realizedProfit, spent);
   }
@@ -343,14 +303,13 @@ function calcNetWorth(holdings, profit, spent) {
   let value = 0;
   for (const symbol in holdings) {
     const qty = holdings[symbol];
-    const currentPrice = getCurrentPrice(symbol); // Replace if needed
+    const currentPrice = getCurrentPrice(symbol);
     value += qty * currentPrice;
   }
   return (value + profit - spent).toFixed(2);
 }
 
 function getCurrentPrice(symbol) {
-  // Replace with real-time data or backend if available
   return 100 + Math.random() * 100;
 }
 
@@ -387,8 +346,7 @@ function renderHourlyChart(dataPoints) {
   });
 }
 
-
-// ========================== RUN =============================
+// ========================== RUN ALL =============================
 fetchUserData();
 fetchHoldings();
 fetchSoldHistory();

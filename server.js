@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const stockRoutes = require('./src/routes/stocks');
+const chatbotRoutes = require('./src/routes/chatbotRoutes');
+
 
 const app = express();
 
@@ -12,6 +14,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
 app.use('/api/stocks', stockRoutes);
+
+app.use('/api/chatbot', chatbotRoutes);
+
 
 // Catch-all route for unknown API paths
 app.use((req, res, next) => {
@@ -30,4 +35,7 @@ const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
 
 const riskRoutes = require('./src/routes/risk');
+
+
 app.use('/api/risk', riskRoutes);
+

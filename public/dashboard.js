@@ -92,6 +92,9 @@ function buyStock() {
   const symbol = document.getElementById('symbol').value.toUpperCase();
   const quantity = parseInt(document.getElementById('quantity').value);
   const price = parseFloat(document.getElementById('price').value);
+  if (!symbol || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+    return alert("Invalid input: Quantity and Price must be positive numbers.");
+  }
   if (!symbol || isNaN(quantity) || isNaN(price)) return alert("Invalid input");
 
   const stock = allStocks.find(s => s.symbol === symbol);
@@ -129,7 +132,9 @@ function sellStock() {
   const symbol = document.getElementById('symbol').value.toUpperCase();
   const quantity = parseInt(document.getElementById('quantity').value);
   const price = parseFloat(document.getElementById('price').value);
-  if (!symbol || isNaN(quantity) || isNaN(price)) return alert("Invalid input");
+  if (!symbol || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+    return alert("Invalid input: Quantity and Price must be positive numbers.");
+  }
 
   if (!holdings[symbol] || holdings[symbol].quantity < quantity) {
     return alert("You don't own enough shares to sell.");

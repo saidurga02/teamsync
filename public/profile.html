@@ -7,6 +7,14 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <div style="position: fixed; bottom: 20px; right: 20px; width: 300px; background: white; color: black; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9999;">
+    <div id="chatBox" style="max-height: 200px; overflow-y: auto; font-size: 14px;"></div>
+    <input id="chatInput" type="text" placeholder="Ask me..." style="width: 80%; padding: 6px;" />
+    <button id="chatSend" style="padding: 6px;">Send</button>
+  </div>
+  
+  <script src="chatbot.js"></script>
+  
   <div class="profile-container">
 
     <!-- LEFT PANEL -->
