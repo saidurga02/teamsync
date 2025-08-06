@@ -21,7 +21,9 @@ document.getElementById("chatSend").onclick = async function () {
 
   const chatBox = document.getElementById("chatBox");
   chatBox.innerHTML += `<div><strong>You:</strong> ${userMessage}</div>`;
-  input.value = "Thinking...";
+  document.getElementById("typingIndicator").style.display = "flex";
+input.value = "";
+
 
   const reply = await chatWithBot(userMessage);
   chatBox.innerHTML += `<div><strong>Bot:</strong> ${reply}</div>`;

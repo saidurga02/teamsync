@@ -7,17 +7,26 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div style="position: fixed; bottom: 20px; right: 20px; width: 300px; background: white; color: black; border-radius: 10px; padding: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9999;">
-    <div id="chatBox" style="max-height: 200px; overflow-y: auto; font-size: 14px;"></div>
-    <input id="chatInput" type="text" placeholder="Ask me..." style="width: 80%; padding: 6px;" />
-    <button id="chatSend" style="padding: 6px;">Send</button>
+  <!-- Chatbot Component -->
+<link rel="stylesheet" href="chatbot.css" />
+<div class="chat-container">
+  <header class="chat-header">Chatbot</header>
+  <div id="typingIndicator" class="typing-indicator" style="display: none;">
+    <span></span><span></span><span></span>
   </div>
   
-  <script src="chatbot.js"></script>
+  <div id="chatBox" class="chat-box"></div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Ask about stocks..." />
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+<script src="chatbot.js"></script>
+
   
   <div class="profile-container">
 
-    <!-- LEFT PANEL -->
+    <!-- LEFT PANEL -->node
     <div class="left">
 
       <!-- USER INFO -->
