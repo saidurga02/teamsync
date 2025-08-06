@@ -202,6 +202,53 @@ async function openModal(stock) {
 
   modal.style.display = 'flex';
 }
+document.getElementById('buyBtn').onclick = function () {
+  const qty = parseInt(document.getElementById('buyQty').value);
+  const price = parseFloat(document.getElementById('buyPrice').value);
+  if (isNaN(qty) || isNaN(price)) return alert("Invalid input");
+
+  const cost = qty * price;
+  if (netWorth < cost) return alert(`Not enough funds. You need ₹${cost}, have ₹${netWorth}.`);
+
+  fetch('/api/stocks/buy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
+  }).then(() => {
+    if (!holdings[selectedStock.symbol]) holdings[selectedStock.symbol] = { quantity: 0, avgPrice: 0 };
+
+    const current = holdings[selectedStock.symbol];
+    const totalQty = current.quantity + qty;
+    current.avgPrice = ((current.avgPrice * current.quantity) + (price * qty)) / totalQty;
+    current.quantity = totalQty;
+
+    netWorth -= cost;
+    persistData();
+    alert(`Bought ${qty} shares of ${selectedStock.symbol}`);
+  });
+};
+
+document.getElementById('sellBtn').onclick = function () {
+  const qty = parseInt(document.getElementById('sellQty').value);
+  const price = parseFloat(document.getElementById('sellPrice').value);
+  if (isNaN(qty) || isNaN(price)) return alert("Invalid input");
+
+  const current = holdings[selectedStock.symbol];
+  if (!current || current.quantity < qty) return alert("You don't have enough shares.");
+
+  fetch('/api/stocks/sell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol: selectedStock.symbol, quantity: qty, price })
+  }).then(() => {
+    current.quantity -= qty;
+    if (current.quantity === 0) current.avgPrice = 0;
+
+    netWorth += qty * price;
+    persistData();
+    alert(`Sold ${qty} shares of ${selectedStock.symbol}`);
+  });
+};
 
 // Init chart
 createBubbleChart();

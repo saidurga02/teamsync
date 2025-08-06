@@ -74,8 +74,18 @@
       <h3>📦 Holdings</h3>
       <ul id="holdingsList"></ul>
     </div>
+   
   </div>
 
   <script src="profile.js"></script>
+  <!-- Recommendation Popup Button -->
+<button id="recommendationBtn" title="Get Stock Advice">💡 Recommendation</button>
+
 </body>
+<script>
+  document.getElementById('recommendationBtn').addEventListener('click', () => {
+    window.open('risk.html', 'RiskAdvisorPopup', 'width=500,height=600,scrollbars=yes,resizable=yes');
+  });
+</script>
+
 </html>

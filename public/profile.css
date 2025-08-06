@@ -217,3 +217,21 @@ td {
   max-width: 100%;
   height: 300px !important; /* Adjust height as needed */
 }
+#recommendationBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 50px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease-in-out;
+}
+
+#recommendationBtn:hover {
+  background-color: #388e3c;
+}

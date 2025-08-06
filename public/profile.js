@@ -1,3 +1,4 @@
+
 async function fetchUserData() {
   const userId = 1;
   try {

@@ -1,8 +1,4 @@
-
 const apiKey = '7abdfcf528aa41648308ffc30ff7ed35'; // Replace with your actual TwelveData API key
-
-// Dummy list of user's current holdings (simulate your backend)
-const userHoldings = ['TCS', 'AAPL', 'MSFT']; // Symbols user currently owns
 
 async function getRecommendation() {
   const age = parseInt(document.getElementById('age').value);
@@ -15,8 +11,23 @@ async function getRecommendation() {
     output.textContent = 'Please enter all details.';
     return;
   }
+  if (isNaN(age) || age < 10 || age > 100) {
+    return output.innerHTML = "<p style='color:red;'>Please enter a valid age between 10 and 100.</p>";
+  }
+
+  if (isNaN(salary) || salary <= 0) {
+    return output.innerHTML = "<p style='color:red;'>Please enter a valid salary.</p>";
+  }
 
   try {
+    // ✅ Get user holdings from your backend
+    const holdingsRes = await fetch('/api/stocks/holdings');
+    const holdingsData = await holdingsRes.json();
+    const ownedSymbols = holdingsData.map(h => h.symbol.toUpperCase());
+
+    const hasStock = ownedSymbols.includes(symbol);
+
+    // ✅ Fetch stock performance
     const intervals = ['1month', '6month', '1year'];
     const prices = {};
 
@@ -51,22 +62,16 @@ async function getRecommendation() {
     const sixMonthChange = parseFloat(prices['6month'].change);
     const oneYearChange = parseFloat(prices['1year'].change);
 
-    // Age-based risk tolerance
+    // ✅ Age-based risk tolerance
     const riskTolerance = age < 30 ? 'High' : age < 50 ? 'Medium' : 'Low';
-
-    // Salary-based budget
     const budget = salary * 0.2;
 
-    // === Check if user owns this stock ===
-    const hasStock = userHoldings.includes(symbol);
-
-    // === RECOMMENDATION LOGIC ===
+    // ✅ Decision logic
     let recommendation = 'Hold';
     let reason = 'The stock is stable, and there is no clear trend for action.';
     let extraAdvice = '';
 
     if (hasStock) {
-      // Logic when user already holds the stock
       if (oneMonthChange < -5 || oneYearChange < -10) {
         recommendation = 'Sell';
         reason = 'You hold this stock and it has shown significant decline.';
@@ -78,7 +83,6 @@ async function getRecommendation() {
         reason = 'Stock is performing stably in your holdings.';
       }
     } else {
-      // Logic when user does NOT hold the stock
       if (oneMonthChange > 5 && sixMonthChange > 10 && oneYearChange > 15) {
         recommendation = riskTolerance === 'High' ? 'Buy' : 'Watch';
         reason = 'Strong growth across time frames — might be a good entry.';
@@ -101,7 +105,7 @@ async function getRecommendation() {
       `;
     }
 
-    // === Final Output ===
+    // ✅ Display output
     output.innerHTML = `
       <h3>${symbol} Analysis</h3>
       <p><strong>Age:</strong> ${age} | <strong>Salary:</strong> ₹${salary} | <strong>Risk:</strong> ${riskTolerance}</p>
@@ -121,7 +125,7 @@ async function getRecommendation() {
   }
 }
 
-// Personalized entry advice based on risk and performance
+// ✅ Entry advice generator
 function generateEntryAdvice(risk, m1, m6, y1) {
   if (risk === 'High') {
     if (m1 < 0 && y1 > 10) return "You can consider buying now – this may be a good dip opportunity.";
