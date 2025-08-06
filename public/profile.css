@@ -1,219 +1,219 @@
 /* ========== GLOBAL ========== */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    border: none; /* Remove all borders by default */
-  }
-  
-  canvas, table, th, td, section, div {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  .donut-section,
+   
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none; /* Remove all borders by default */
+}
+
+canvas, table, th, td, section, div {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.donut-section,
 .bar-wrapper,
 .chart-section,
 .sold-section {
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
-  border: none;
+background: transparent;
+box-shadow: none;
+padding: 0;
+border: none;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f9fafc;
-    color: #2c3e50;
-  }
-  
-  .profile-container {
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
-    padding: 24px;
-  }
-  
-  /* ========== LEFT PANEL ========== */
-  .left {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  /* ========== RIGHT PANEL ========== */
-  .right {
-    flex: 1.5;
-    padding: 16px 20px;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafc;
+  color: #2c3e50;
+}
 
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* ========== LEFT PANEL ========== */
+.left {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ========== RIGHT PANEL ========== */
+.right {
+  flex: 1.5;
+  padding: 16px 20px;
+
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.right h3 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #34495e;
+}
+
+/* ========== USER INFO ========== */
+.user-info-box {
+  background-color: transparent;
+  padding: 0;
+}
+
+.user-info-box h2 {
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2e86de;
+}
+
+.user-info-box p {
+  margin: 6px 0;
+  color: #4d4d4d;
+}
+
+/* ========== PIE CHART + LEGEND ========== */
+.donut-section {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
   
-  .right h3 {
-    margin-bottom: 16px;
-    font-size: 20px;
-    color: #34495e;
-  }
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.donut-box canvas {
+  width: 160px !important;
+  height: 160px !important;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* ========== BAR CHARTS ========== */
+.bar-charts {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.bar-wrapper {
+  flex: 1;
   
-  /* ========== USER INFO ========== */
-  .user-info-box {
-    background-color: transparent;
-    padding: 0;
-  }
-  
-  .user-info-box h2 {
-    margin-top: 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: #2e86de;
-  }
-  
-  .user-info-box p {
-    margin: 6px 0;
-    color: #4d4d4d;
-  }
-  
-  /* ========== PIE CHART + LEGEND ========== */
-  .donut-section {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    padding: 20px;
-    
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
-  }
-  
-  .donut-box canvas {
-    width: 160px !important;
-    height: 160px !important;
-  }
-  
-  .donut-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #34495e;
-  }
-  
-  .legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-  }
-  
-  /* ========== BAR CHARTS ========== */
-  .bar-charts {
-    display: flex;
-    gap: 24px;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-  
-  .bar-wrapper {
-    flex: 1;
-    
-    padding: 16px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-    min-width: 260px;
-  }
-  
-  .bar-wrapper h4 {
-    margin-bottom: 12px;
-    font-size: 16px;
-    color: #2d3436;
-  }
-  
-  .bar-wrapper canvas {
-    width: 100% !important;
-    height: 200px !important;
-  }
-  
-  /* ========== LINE CHART ========== */
-  .chart-section {
-   
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  }
-  
-  .chart-section h3 {
-    margin-bottom: 16px;
-    font-size: 18px;
-    color: #2980b9;
-  }
-  
-  /* ========== SOLD HISTORY ========== */
-  .sold-section {
-    
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  }
-  
-  .sold-section h3 {
-    margin-bottom: 16px;
-    font-size: 18px;
-    color: #c0392b;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  
-  thead {
-    background-color: #ecf0f1;
-  }
-  
-  th, td {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
-  }
-  
-  td {
-    color: #555;
-  }
-  
-  /* ========== SCROLLBAR ========== */
-  .right::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .right::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-  }
-  #holdingsList {
-    list-style: none;
-    padding-left: 0;
-  }
-  
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  min-width: 260px;
+}
+
+.bar-wrapper h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #2d3436;
+}
+
+.bar-wrapper canvas {
+  width: 100% !important;
+  height: 200px !important;
+}
+
+/* ========== LINE CHART ========== */
+.chart-section {
  
-  #holdingsList li {
-    padding: 6px 0;
-    font-size: 15px;
-    color: #34495e;
-  }
-  #netWorthChart {
-    max-width: 100%;
-    height: 300px !important; /* Adjust height as needed */
-  }
-      
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.chart-section h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #2980b9;
+}
+
+/* ========== SOLD HISTORY ========== */
+.sold-section {
+  
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.sold-section h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #c0392b;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+thead {
+  background-color: #ecf0f1;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+td {
+  color: #555;
+}
+
+/* ========== SCROLLBAR ========== */
+.right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+#holdingsList {
+  list-style: none;
+  padding-left: 0;
+}
+
+
+#holdingsList li {
+  padding: 6px 0;
+  font-size: 15px;
+  color: #34495e;
+}
+#netWorthChart {
+  max-width: 100%;
+  height: 300px !important; /* Adjust height as needed */
+}

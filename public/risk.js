@@ -1,3 +1,4 @@
+
 const apiKey = '7abdfcf528aa41648308ffc30ff7ed35'; // Replace with your actual TwelveData API key
 
 // Dummy list of user's current holdings (simulate your backend)
