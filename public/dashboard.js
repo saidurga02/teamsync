@@ -67,6 +67,11 @@ function renderStock(stock) {
     <td>₹${stock.day_low}</td>
     <td>${stock.volume}</td>
     <td style="color:${color}">${value}</td>
+        <td>
+          <button class="buy-btn" onclick="quickBuy('${stock.symbol}', ${stock.current_price})">Buy</button>
+          <button class="sell-btn" onclick="quickSell('${stock.symbol}', ${stock.current_price})">Sell</button>
+        </td>
+
   `;
   document.getElementById('stocksBody').appendChild(row);
 }
@@ -92,6 +97,9 @@ function buyStock() {
   const symbol = document.getElementById('symbol').value.toUpperCase();
   const quantity = parseInt(document.getElementById('quantity').value);
   const price = parseFloat(document.getElementById('price').value);
+  if (!symbol || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+    return alert("Invalid input: Quantity and Price must be positive numbers.");
+  }
   if (!symbol || isNaN(quantity) || isNaN(price)) return alert("Invalid input");
 
   const stock = allStocks.find(s => s.symbol === symbol);
@@ -129,7 +137,9 @@ function sellStock() {
   const symbol = document.getElementById('symbol').value.toUpperCase();
   const quantity = parseInt(document.getElementById('quantity').value);
   const price = parseFloat(document.getElementById('price').value);
-  if (!symbol || isNaN(quantity) || isNaN(price)) return alert("Invalid input");
+  if (!symbol || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+    return alert("Invalid input: Quantity and Price must be positive numbers.");
+  }
 
   if (!holdings[symbol] || holdings[symbol].quantity < quantity) {
     return alert("You don't own enough shares to sell.");
@@ -158,6 +168,55 @@ function sellStock() {
     document.getElementById('quantity').value = '';
     document.getElementById('price').value = '';
   });
+}
+function quickBuy(symbol, price) {
+  const quantity = prompt(`Enter quantity to BUY for ${symbol}:`);
+  const qty = parseInt(quantity);
+
+  if (isNaN(qty) || qty <= 0) return alert("Invalid quantity");
+
+  const cost = qty * price;
+  if (netWorth < cost) return alert(`Insufficient funds. You need ₹${cost}, but have ₹${netWorth}.`);
+
+  fetch('/api/stocks/buy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol, quantity: qty, price })
+  }).then(() => {
+    if (!holdings[symbol]) holdings[symbol] = { quantity: 0, avgPrice: 0 };
+
+    const totalQty = holdings[symbol].quantity + qty;
+    holdings[symbol].avgPrice = ((holdings[symbol].avgPrice * holdings[symbol].quantity) + (price * qty)) / totalQty;
+    holdings[symbol].quantity = totalQty;
+
+    netWorth -= cost;
+    persistData();
+
+    document.getElementById('netValue').innerText = netWorth.toFixed(2);
+  }).catch(err => alert('Error updating backend:', err));
+}
+
+
+function quickSell(symbol, price) {
+  const quantity = prompt(`Enter quantity to SELL for ${symbol}:`);
+  const qty = parseInt(quantity);
+
+  if (isNaN(qty) || qty <= 0) return alert("Invalid quantity");
+  if (!holdings[symbol] || holdings[symbol].quantity < qty) return alert("Not enough shares to sell.");
+
+  fetch('/api/stocks/sell', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol, quantity: qty, price })
+  }).then(() => {
+    holdings[symbol].quantity -= qty;
+    if (holdings[symbol].quantity === 0) holdings[symbol].avgPrice = 0;
+
+    netWorth += qty * price;
+    persistData();
+
+    document.getElementById('netValue').innerText = netWorth.toFixed(2);
+  }).catch(err => alert('Error updating backend:', err));
 }
 
 

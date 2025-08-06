@@ -1,115 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f4f9ff;
-    padding: 30px;
-    margin: 0;
-    color: #333;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #083d77;
-  }
-  
-  #historyList {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 50px 20px; /* row gap, column gap */
-    padding: 20px;
-  }
-  
-  .history-item {
-    text-align: center;
-    cursor: pointer;
-  }
-  
-  .history-item img {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 10px;
-  }
-  
-  .history-item .name {
-    font-weight: bold;
-    font-size: 16px;
-    color: #083d77;
-  }
-  
-  /* Modal styling */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-content {
-    background: #fff;
-    margin: 5% auto;
-    padding: 20px;
-    width: 500px;
-    max-height: 90%;
-    overflow-y: auto;
-    border-radius: 8px;
-    position: relative;
-  }
-  
-  .close {
-    float: right;
-    font-size: 22px;
-    cursor: pointer;
-  }
-  .modal-content {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 700px;
-    margin: auto;
-    position: relative;
-    
-  }
-  
-  .modal-content h3 {
-    margin-top: 30px;
-    color: #333;
-  }
-  
-  .modal-content input {
-    padding: 10px;
-    margin: 10px 10px 10px 0;
-    width: 120px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-  
-  .modal-content button {
-    padding: 10px 16px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .modal-content button:hover {
-    background-color: #0056b3;
-  }
-  
-  #modalChart {
-    margin-top: 20px;
-    
-  }
-    
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+  color: #ecf0f1;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 40px 20px; /* Restored original size */
+  background: linear-gradient(120deg,#1b2735, #2c5364);
+  box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.2rem; /* Original larger size */
+  font-weight: 800;
+}
+
+.net-worth-card {
+  margin-top: 20px; /* Original spacing */
+  display: inline-block;
+  padding: 20px 35px; /* Original padding */
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.net-worth-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem; /* Original size */
+  color: #fcfcfc;
+}
+
+.net-worth-value {
+  font-size: 1.8rem; /* Original size */
+  font-weight: 800;
+  color: #f8f8f5;
+  text-shadow: 0 0 10px rgba(253, 253, 250, 0.6);
+}
+
+/* DASHBOARD CARD */
+.dashboard-card {
+  max-width: 900px;
+  margin: 15px auto;
+  padding: 10px;
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+}
+
+.dashboard-card h2 {
+  text-align: center;
+  color: #00eaff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+/* BUBBLE CONTAINER CENTERING */
+.bubble-container {
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically if container has height */
+  text-align: center;
+  width: 100%;
+}
+
+.bubble-container svg {
+  display: block;
+  margin: 0 auto; /* Centers SVG */
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: rgba(17,25,40,0.9);
+  backdrop-filter: blur(10px);
+  padding: 8px; /* Very small */
+  border-radius: 6px;
+  width: 80%;
+  max-width: 420px; /* Much smaller */
+  box-shadow: 0 3px 10px rgba(0,0,0,0.8);
+  color: #fff;
+  animation: fadeIn 0.2s ease;
+}
+
+.close {
+  float: right;
+  font-size: 16px; /* Smaller */
+  cursor: pointer;
+  color: #aaa;
+}
+
+.close:hover {
+  color: #fff;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#modalSymbol {
+  color: #00eaff;
+  font-size: 0.8rem;
+}
+
+.sector-badge {
+  padding: 1px 4px;
+  background: #2c5364;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+}
+
+/* COMPACT TRADE SECTION */
+.trade-section {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.trade-box {
+  flex: 1;
+  padding: 4px; /* Very compact */
+  border-radius: 4px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.trade-box h3 {
+  margin: 0 0 4px;
+  font-size: 0.65rem;
+}
+
+.trade-box input {
+  width: 100%;
+  padding: 3px;
+  margin: 2px 0;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+/* BUTTONS VERY SMALL */
+.buy-btn {
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  border: none;
+  padding: 3px 6px;
+  font-size: 0.65rem;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  width: 100%;
+}
+
+.buy-btn:hover {
+  background: linear-gradient(90deg, #27ae60, #1e8449);
+}
+
+.sell-btn {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+  border: none;
+  padding: 3px 6px;
+  font-size: 0.65rem;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  width: 100%;
+}
+
+.sell-btn:hover {
+  background: linear-gradient(90deg, #c0392b, #922b21);
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(5px);}
+  to {opacity: 1; transform: translateY(0);}
+}

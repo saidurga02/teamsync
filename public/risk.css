@@ -1,0 +1,120 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f1f6fc;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group input {
+  padding: 8px 12px;
+  font-size: 14px;
+  margin: 6px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  width: 160px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #0077cc;
+  outline: none;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+#output {
+  margin-top: 25px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.chat-message {
+  background-color: #e1ecf9;
+  padding: 12px 16px;
+  border-radius: 20px;
+  max-width: 80%;
+  align-self: flex-start;
+  position: relative;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.popup-buttons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.popup-buttons button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.popup-buttons button:hover {
+  background-color: #0056b3;
+}
+.popup {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 300px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}

@@ -87,7 +87,7 @@ body {
   border-collapse: collapse;
   background-color: #12294d;
   color: #ffffff;
-  border: 1px solid #12294d;
+  border: 1px solid #1b263b;
 }
 
 .stocks-table th, .stocks-table td {
@@ -97,7 +97,7 @@ body {
 }
 
 .stocks-table th {
-  background-color: #12294d;
+  background-color: #1b263b;
 }
 
 .stocks-table tr:hover {
@@ -135,4 +135,34 @@ body {
   display: flex;
   gap: 20px; /* Consistent spacing between options */
   flex-wrap: wrap;
+}
+.buy-btn, .sell-btn {
+  border: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.buy-btn {
+  background-color: #64ffda; /* green */
+  color: rgb(22, 22, 22);
+}
+
+.buy-btn:hover {
+  background-color: #4f9988;
+  transform: scale(1.05);
+}
+
+.sell-btn {
+  background-color: #64ffda ;/* red */
+  color: black;
+}
+
+.sell-btn:hover {
+  background-color: #4b8d7e;
+  transform: scale(1.05);
 }

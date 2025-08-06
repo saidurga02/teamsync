@@ -30,4 +30,8 @@ const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
 
 const riskRoutes = require('./src/routes/risk');
+
 app.use('/api/risk', riskRoutes);
+
+app.use('/api/risk', riskRoutes)
+
