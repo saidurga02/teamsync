@@ -108,7 +108,7 @@ async function getRecommendation() {
     // ✅ Display output
     output.innerHTML = `
       <h3>${symbol} Analysis</h3>
-      <p><strong>Age:</strong> ${age} | <strong>Salary:</strong> ₹${salary} | <strong>Risk:</strong> ${riskTolerance}</p>
+      <p><strong>Age:</strong> ${age} | <strong>Salary:</strong> ₹${salary} | <strong>Risk Tolerance:</strong> ${riskTolerance}</p>
       <p><strong>Investment Budget:</strong> ₹${budget}</p>
       <hr>
       <p><strong>1 Month:</strong> ${prices['1month'].change}%</p>
@@ -141,4 +141,11 @@ function generateEntryAdvice(risk, m1, m6, y1) {
     return "Too risky now. Reassess next month.";
   }
   return "Monitor the market for better entry timing.";
+}
+function closePopup() {
+  document.querySelector('.popup').style.display = 'none';
+}
+
+function refreshPage() {
+  location.reload();
 }

@@ -97,5 +97,43 @@
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     dateElem.textContent = today.toLocaleDateString(undefined, options);
   </script>
+  <!-- Floating Chat Button -->
+<div id="chatButton" onclick="toggleChat()" style="
+position: fixed;
+bottom: 20px;
+right: 20px;
+background-color: #0077cc;
+color: white;
+padding: 12px 16px;
+border-radius: 30px;
+cursor: pointer;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+z-index: 1000;
+font-weight: bold;
+">
+💬 Advisor
+</div>
+
+<!-- Embedded Chat Frame -->
+<iframe id="chatFrame" src="risk.html" style="
+position: fixed;
+bottom: 70px;
+right: 20px;
+width: 320px;
+height: 420px;
+border: none;
+border-radius: 15px;
+box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+z-index: 1000;
+display: none;
+"></iframe>
+
 </body>
+<script>
+  function toggleChat() {
+    const chat = document.getElementById('chatFrame');
+    chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'block' : 'none';
+  }
+  
+</script>
 </html>
