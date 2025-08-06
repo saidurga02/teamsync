@@ -17,19 +17,27 @@
         <h2>👤 Welcome, <span id="userName">Tim</span></h2>
         <p>Email: <span id="userEmail">jamescharlie@gmail.com</span></p>
         <p>Joined: <span id="joinedDate">02/08/2025</span></p>
+        <p>Bank Account No: <span id="bankAcc">1234 5678 9012</span></p>
+        <p>PAN No: <span id="panNo">ABCDE1234F</span></p>
       </section>
 
       <!-- PIE CHART & LEGEND -->
        
-      <section class="donut-section">
-        
-        <div class="donut-box">
+    <!-- COMBINED CHARTS -->
+        <section class="combined-chart">
+          <!-- PIE CHART -->
+          <div class="donut-box animate-chart">
             <h4>Stock Holdings</h4>
-          <canvas id="donutChart" width="160" height="160"></canvas>
-        </div>
-        <div class="donut-legend" id="donutDetails"></div>
-      </section>
+            <canvas id="donutChart" width="160" height="160"></canvas>
+            <div class="donut-legend" id="donutDetails"></div>
+          </div>
 
+          <!-- LINE CHART -->
+          <div class="line-box animate-chart">
+            <h4>📊 Net Worth Trend</h4>
+            <canvas id="netWorthChart" height="250"></canvas>
+          </div>
+        </section>
     <!-- Bar Charts Section -->
         <div class="bar-charts">
             <div class="bar-wrapper">
@@ -43,12 +51,7 @@
         </div>
   
 
-      <!-- LINE CHART -->
-      <!-- NET WORTH OVER TIME CHART -->
-        <section class="chart-section">
-            <h3>📊 Net Worth Trend (Every 7 Hours)</h3>
-            <canvas id="netWorthChart" height="250"></canvas>
-        </section>
+      
   
 
       <!-- SOLD HISTORY -->
