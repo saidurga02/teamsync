@@ -249,20 +249,66 @@ td {
 
 .donut-box, .line-box {
   flex: 1;
-  min-width: 280px;
-  background: white;
+  min-width: 180px;
+
   padding: 16px 20px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
 }
 
 /* ========== NEW: CHART SWING ANIMATION ========== */
-@keyframes swing {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(1deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(-1deg); }
-  100% { transform: rotate(0deg); }
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.donut-box,
+.line-box,
+.bar-wrapper,
+.chart-section,
+.sold-section,
+.right ul,
+.right h3 {
+  animation: popIn 0.6s ease forwards;
+}
+#holdingsList li {
+  background: linear-gradient(to right, #f0f4f8, #ffffff);
+  margin-bottom: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #34495e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease;
+}
+#holdingsList li:hover {
+  transform: scale(1.02);
+}
+
+.sold-section table {
+  border-radius: 10px;
+  overflow: hidden;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+}
+
+.sold-section tbody tr:hover {
+  background-color: #f5f9fc;
+  transform: scale(1.01);
+  transition: 0.2s ease;
+}
+
+thead {
+  background-color: #dfe6e9;
 }
 
 .animate-chart {
