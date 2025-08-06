@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Chatbot Component -->
+  <!-- Chatbot Component
 <link rel="stylesheet" href="chatbot.css" />
 <div class="chat-container">
   <header class="chat-header">Chatbot</header>
@@ -21,7 +21,7 @@
     <button id="chatSend">Send</button>
   </div>
 </div>
-<script src="chatbot.js"></script>
+<script src="chatbot.js"></script> -->
 
   
   <div class="profile-container">
@@ -34,19 +34,27 @@
         <h2>👤 Welcome, <span id="userName">Tim</span></h2>
         <p>Email: <span id="userEmail">jamescharlie@gmail.com</span></p>
         <p>Joined: <span id="joinedDate">02/08/2025</span></p>
+        
+        
       </section>
 
       <!-- PIE CHART & LEGEND -->
        
-      <section class="donut-section">
-        
-        <div class="donut-box">
+    <!-- COMBINED CHARTS -->
+        <section class="combined-chart">
+          <!-- PIE CHART -->
+          <div class="donut-box animate-chart">
             <h4>Stock Holdings</h4>
-          <canvas id="donutChart" width="160" height="160"></canvas>
-        </div>
-        <div class="donut-legend" id="donutDetails"></div>
-      </section>
+            <canvas id="donutChart" width="160" height="160"></canvas>
+            <div class="donut-legend" id="donutDetails"></div>
+          </div>
 
+          <!-- LINE CHART -->
+          <div class="line-box animate-chart">
+            <h4>📊 Recent Trend</h4>
+            <canvas id="netWorthChart" height="250"></canvas>
+          </div>
+        </section>
     <!-- Bar Charts Section -->
         <div class="bar-charts">
             <div class="bar-wrapper">
@@ -60,12 +68,7 @@
         </div>
   
 
-      <!-- LINE CHART -->
-      <!-- NET WORTH OVER TIME CHART -->
-        <section class="chart-section">
-            <h3>📊 Net Worth Trend (Every 7 Hours)</h3>
-            <canvas id="netWorthChart" height="250"></canvas>
-        </section>
+      
   
 
       <!-- SOLD HISTORY -->
@@ -91,8 +94,40 @@
       <h3>📦 Holdings</h3>
       <ul id="holdingsList"></ul>
     </div>
+   
   </div>
 
   <script src="profile.js"></script>
+  <!-- Floating Chat Button -->
+<button id="chatbotToggle" class="floating-button">💬 Chat</button>
+
+<!-- Popup Container -->
+<div id="chatPopup" class="chat-popup hidden">
+  <div class="popup-header">
+    <button id="advisorTab" class="active">📊 Advisor</button>
+    <button id="chatTab">🤖 Chatbot</button>
+    <button class="close-btn" onclick="closePopup()">×</button>
+  </div>
+
+  <!-- Advisor Panel -->
+  <div id="advisorPanel" class="popup-panel">
+    <input type="number" id="age" placeholder="Age">
+    <input type="number" id="salary" placeholder="Monthly Salary ₹">
+    <input type="text" id="symbolInput" placeholder="Stock Symbol">
+    <button onclick="getRecommendation()">Get Advice</button>
+    <div id="output"></div>
+  </div>
+
+  <!-- Chatbot Panel -->
+  <div id="chatPanel" class="popup-panel hidden">
+    <div id="chatBox" class="chat-box"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask about stocks...">
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>

@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const stockRoutes = require('./src/routes/stocks');
 const chatbotRoutes = require('./src/routes/chatbotRoutes');
-
+const riskRoutes = require('./src/routes/riskRoutes');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+app.use('/api/risk', riskRoutes);
 
 // Serve static frontend files (e.g., dashboard.html, dashboard.js)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -34,8 +36,14 @@ app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`)
 const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
 
-const riskRoutes = require('./src/routes/risk');
 
 
-app.use('/api/risk', riskRoutes);
+
+
+// app.use('/api/risk', riskRoutes);
+
+
+
+// app.use('/api/risk', riskRoutes)
+
 

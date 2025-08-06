@@ -3,21 +3,207 @@
 <head>
   <meta charset="UTF-8">
   <title>Smart Stock Advisor</title>
+  <link rel="stylesheet" href="chatbot.css">
   <link rel="stylesheet" href="risk.css">
+  <style>
+    .tab-slider {
+      display: flex;
+      width: 200%;
+      transition: transform 0.4s ease-in-out;
+    }
+    .popup-tab-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: 200%;
+      height: 600px;
+    }
+    .popup-tab-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .popup-tab-container::-webkit-scrollbar-thumb {
+      background: #007bff;
+      border-radius: 4px;
+    }
+    .popup-tab-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .popup-panel {
+      width: 50%;
+      flex-shrink: 0;
+      padding: 20px;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .form-group input {
+      padding: 12px;
+      font-size: 15px;
+      margin: 8px;
+      border-radius: 10px;
+      width: 220px;
+    }
+    .form-group button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      background: #1a1a1a;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: none;
+    }
+    .chat-input-area button {
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .chat-input-area button:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 <body>
-
   <h1>📊 Smart Stock Advisor</h1>
-  
-  <div class="form-group">
-    <input type="number" id="age" placeholder="Enter your age">
-    <input type="number" id="salary" placeholder="Monthly salary (₹)">
-    <input type="text" id="symbolInput" placeholder="Stock symbol (e.g. AAPL)">
-    <button onclick="getRecommendation()">Get Advice</button>
+
+  <!-- Floating Chat Button -->
+  <button id="chatbotToggle" class="floating-button">💬 Chat</button>
+
+  <!-- Popup Container with Tabs -->
+  <div id="chatPopup" class="chat-popup hidden">
+    <div class="popup-header">
+      <button id="advisorTab" class="active">📊 Advisor</button>
+      <button id="chatTab">🤖 Chatbot</button>
+      <button class="close-btn" onclick="closePopup()">×</button>
+    </div>
+
+    <div class="popup-tab-container">
+      <div id="tabSlider" class="tab-slider">
+        <!-- Advisor Panel -->
+        <div id="advisorPanel" class="popup-panel">
+          <div class="form-group">
+            <input type="number" id="age" placeholder="Enter your age">
+            <input type="number" id="salary" placeholder="Monthly salary (₹)">
+            <input type="text" id="symbolInput" placeholder="Stock symbol (e.g. AAPL)">
+            <button onclick="getRecommendation()">Get Advice</button>
+          </div>
+          <div id="output"></div>
+        </div>
+
+        <!-- Chatbot Panel -->
+        <div id="chatPanel" class="popup-panel">
+          <div class="chat-box" id="chatBox"></div>
+          <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Ask me anything...">
+            <button id="chatSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="output"></div>
-
   <script src="risk.js"></script>
+  <script>
+    async function getRecommendation() {
+      const age = document.getElementById('age').value;
+      const salary = document.getElementById('salary').value;
+      const symbol = document.getElementById('symbolInput').value;
+    
+      if (!age || !salary || !symbol) {
+        document.getElementById('output').innerHTML = "⚠️ Please fill all fields.";
+        return;
+      }
+    
+      try {
+        const res = await fetch('/api/risk/risk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ age, salary, symbol }),
+        });
+    
+        const data = await res.json();
+        document.getElementById('output').innerHTML = data.recommendation || "⚠️ No recommendation received.";
+      } catch (err) {
+        document.getElementById('output').innerHTML = "❌ Error fetching recommendation.";
+      }
+    }
+    
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const chatBox = document.getElementById('chatBox');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const userMessage = document.createElement('div');
+      userMessage.className = 'chat-message user';
+      userMessage.textContent = message;
+      chatBox.appendChild(userMessage);
+
+      input.value = '';
+      try {
+        const res = await fetch('/api/chatbot/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        });
+
+        const data = await res.json();
+        const botMessage = document.createElement('div');
+        botMessage.className = 'chat-message bot';
+        botMessage.innerHTML = data.reply;
+        chatBox.appendChild(botMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'chat-message bot';
+        errorMessage.textContent = '⚠️ Error getting reply';
+        chatBox.appendChild(errorMessage);
+      }
+    }
+
+    document.getElementById('chatbotToggle').addEventListener('click', () => {
+      document.getElementById('chatPopup').classList.toggle('hidden');
+    });
+
+    function closePopup() {
+      document.getElementById('chatPopup').classList.add('hidden');
+    }
+
+    const tabSlider = document.getElementById('tabSlider');
+    document.getElementById('advisorTab').addEventListener('click', () => {
+      document.getElementById('advisorTab').classList.add('active');
+      document.getElementById('chatTab').classList.remove('active');
+      tabSlider.style.transform = 'translateX(0%)';
+    });
+
+    document.getElementById('chatTab').addEventListener('click', () => {
+      document.getElementById('chatTab').classList.add('active');
+      document.getElementById('advisorTab').classList.remove('active');
+      tabSlider.style.transform = 'translateX(-50%)';
+    });
+
+    document.getElementById('chatSendBtn')?.addEventListener('click', sendChatMessage);
+  </script>
 </body>
 </html>

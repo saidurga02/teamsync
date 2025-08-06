@@ -1,5 +1,6 @@
 /* ========== GLOBAL ========== */
 * {
+
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -17,9 +18,215 @@
 .sold-section {
   background: transparent;
   box-shadow: none;
+
+   
+  margin: 0;
+
   padding: 0;
-  border: none;
+  box-sizing: border-box;
+  border: none; /* Remove all borders by default */
 }
+
+canvas, table, th, td, section, div {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.donut-section,
+.bar-wrapper,
+.chart-section,
+.sold-section {
+background: transparent;
+box-shadow: none;
+padding: 0;
+border: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafc;
+  color: #2c3e50;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* === LEFT PANEL ========== */
+.left {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ========== RIGHT PANEL ========== */
+.right {
+  flex: 1.5;
+  padding: 16px 20px;
+
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.right h3 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #34495e;
+}
+
+/* ========== USER INFO ========== */
+.user-info-box {
+  background-color: transparent;
+  padding: 0;
+}
+
+.user-info-box h2 {
+  margin-top: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2e86de;
+}
+
+.user-info-box p {
+  margin: 6px 0;
+  color: #4d4d4d;
+}
+
+/* ========== PIE CHART + LEGEND ========== */
+.donut-section {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.donut-box canvas {
+  width: 160px !important;
+  height: 160px !important;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* ========== BAR CHARTS ========== */
+.bar-charts {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.bar-wrapper {
+  flex: 1;
+  
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  min-width: 260px;
+}
+
+.bar-wrapper h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #2d3436;
+}
+
+.bar-wrapper canvas {
+  width: 100% !important;
+  height: 200px !important;
+}
+
+/* ========== LINE CHART ========== */
+.chart-section {
+ 
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.chart-section h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #2980b9;
+}
+
+/* ========== SOLD HISTORY ========== */
+.sold-section {
+  
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.sold-section h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #c0392b;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+thead {
+  background-color: #ecf0f1;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+td {
+  color: #555;
+}
+
+/* ========== SCROLLBAR ========== */
+.right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+#holdingsList {
+  list-style: none;
+  padding-left: 0;
+}
+
 
 body {
     margin: 0;
@@ -27,13 +234,67 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f9fafc;
     color: #2c3e50;
+
+
+#holdingsList li {
+  padding: 6px 0;
+  font-size: 15px;
+  color: #34495e;
+}
+#netWorthChart {
+  max-width: 100%;
+  height: 300px !important; /* Adjust height as needed */
+}
+#recommendationBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 50px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: 0.3s ease-in-out;
+}
+
+#recommendationBtn:hover {
+  background-color: #388e3c;
+}
+/* ========== NEW: COMBINED CHARTS ========== */
+.combined-chart {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+}
+
+.donut-box, .line-box {
+  flex: 1;
+  min-width: 180px;
+
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* ========== NEW: CHART SWING ANIMATION ========== */
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+
   }
-  
-  .profile-container {
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
-    padding: 24px;
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
   
   /* ========== LEFT PANEL ========== */
@@ -217,3 +478,111 @@ body {
     height: 300px !important; /* Adjust height as needed */
   }
       
+  .floating-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  
+  .chat-popup {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 320px;
+    background: #1e1e2f;
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    z-index: 1001;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  
+  .chat-popup.hidden {
+    display: none;
+  }
+  
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .popup-header button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 6px;
+    border: none;
+    background: #333;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .popup-header .active {
+    background: #007bff;
+  }
+  
+  .popup-panel {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .popup-panel.hidden {
+    display: none;
+  }
+  
+  .chat-box {
+    background: #111;
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 6px;
+  }
+  
+  .chat-message {
+    margin: 5px 0;
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
+  
+  .chat-message.user {
+    background: #007bff;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  .chat-message.bot {
+    background: #444;
+    color: white;
+    align-self: flex-start;
+  }
+  
+  .chat-input-area {
+    display: flex;
+  }
+  
+  .chat-input-area input {
+    flex: 1;
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+  }
+  
+  .chat-input-area button {
+    padding: 6px 10px;
+    margin-left: 5px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+  
