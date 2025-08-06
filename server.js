@@ -30,5 +30,4 @@ const userRoutes = require('./src/routes/users');
 app.use('/api/users', userRoutes);
 
 const riskRoutes = require('./src/routes/risk');
-app.use('/api/risk', riskRoutes);
-app.use(require('express-status-monitor'));
+app.use('/api/risk', riskRoutes)

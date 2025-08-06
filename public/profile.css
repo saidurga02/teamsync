@@ -235,3 +235,42 @@ td {
 #recommendationBtn:hover {
   background-color: #388e3c;
 }
+/* ========== NEW: COMBINED CHARTS ========== */
+.combined-chart {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+}
+
+.donut-box, .line-box {
+  flex: 1;
+  min-width: 280px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* ========== NEW: CHART SWING ANIMATION ========== */
+@keyframes swing {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-chart {
+  animation: swing 4s ease-in-out infinite;
+}
+
+/* ========== Update for PIE & LINE ========== */
+.donut-box canvas, .line-box canvas {
+  width: 100% !important;
+  height: auto !important;
+}
