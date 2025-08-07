@@ -70,6 +70,10 @@ function renderStock(stock) {
         <td>
           <button class="buy-btn" onclick="quickBuy('${stock.symbol}', ${stock.current_price})">Buy</button>
           <button class="sell-btn" onclick="quickSell('${stock.symbol}', ${stock.current_price})">Sell</button>
+        <button class="gtt-btn" onclick="openGTTModal('${stock.symbol}', ${stock.current_price})">GTT</button>
+
+
+
         </td>
 
   `;
@@ -229,5 +233,165 @@ function persistData() {
 document.querySelectorAll('.typeFilter, .sectorFilter').forEach(cb => {
   cb.addEventListener('change', renderFilteredStocks);
 });
+function updatePortfolioSummary() {
+  let s1 = 0; // total invested
+  let s2 = 0; // current value
 
+  for (const symbol in holdings) {
+    const { quantity, avgPrice } = holdings[symbol];
+    if (quantity <= 0) continue;
+
+    const stock = allStocks.find(s => s.symbol === symbol);
+    if (!stock) continue;
+
+    const currentPrice = parseFloat(stock.current_price);
+    if (isNaN(currentPrice)) continue;
+
+    s1 += avgPrice * quantity;
+    s2 += currentPrice * quantity;
+  }
+
+  const diff = s2 - s1;
+  const status = diff > 0 ? 
+  `<span style="color:green;">&#9650; ₹${diff.toFixed(2)}</span>` : // ▲
+  diff < 0 ?
+  `<span style="color:red;">&#9660; ₹${Math.abs(diff).toFixed(2)}</span>` : // ▼
+  `<span style="color:gray;">No Profit, No Loss</span>`;
+
+
+  document.getElementById('portfolioSummary').innerHTML = `
+    Invested: ₹${s1.toFixed(2)} | Current Value: ₹${s2.toFixed(2)} | ${status}
+  `;
+}
+
+// === GTT Modal Handlers ===
+function openGTTModal(symbol, currentPrice) {
+  document.getElementById('gttSymbol').textContent = symbol;
+  document.getElementById('gttBuyPrice').value = currentPrice;
+  // document.getElementById('gttSellPrice').value = currentPrice;
+  document.getElementById('gttQty').value = 1;
+  document.getElementById('gttModal').style.display = 'block';
+}
+
+function closeGTTModal() {
+  document.getElementById('gttModal').style.display = 'none';
+}
+
+function placeGTTOrder() {
+  const symbol = document.getElementById('gttSymbol').textContent;
+  const qty = parseInt(document.getElementById('gttQty').value);
+  const buyPrice = parseFloat(document.getElementById('gttBuyPrice').value);
+  // const sellPrice = parseFloat(document.getElementById('gttSellPrice').value);
+
+  if (isNaN(qty) || qty <= 0 || isNaN(buyPrice) ) {
+    alert("Please enter valid values for quantity, buy price, and sell price.");
+    return;
+  }
+
+  closeGTTModal();
+  alert(`⏳ GTT Buy order placed for ${symbol} @ ₹${buyPrice}`);
+
+  triggerBuyOrder(symbol, buyPrice, qty, () => {
+    alert(`✅ Bought ${symbol} at or below ₹${buyPrice}. Watching to sell at ₹${sellPrice}`);
+    // triggerSellOrder(symbol, sellPrice, qty);
+  });
+}
+
+function triggerBuyOrder(symbol, targetPrice, qty = 1, onSuccess) {
+  const startTime = Date.now();
+
+  const interval = setInterval(() => {
+    const currentPrice = getCurrentPrice(symbol);
+
+    if (currentPrice <= targetPrice) {
+      clearInterval(interval);
+      executeBuy(symbol, currentPrice, qty);
+      if (typeof onSuccess === 'function') onSuccess(); // Now triggers sell
+    } else if (Date.now() - startTime >= 60000) {
+      clearInterval(interval);
+      alert(`❌ Buy order for ${symbol} expired. Target ₹${targetPrice} not reached.`);
+    }
+  }, 1000);
+}
+
+
+// === Trigger Sell with Fallback Execution at 59s ===
+// function triggerSellOrder(symbol, targetPrice, qty = 1) {
+//   const startTime = Date.now();
+
+//   const interval = setInterval(() => {
+//     const currentPrice = getCurrentPrice(symbol);
+
+//     if (currentPrice >= targetPrice) {
+//       clearInterval(interval);
+//       executeSell(symbol, currentPrice, qty);
+//       alert(`✅ Sold ${symbol} @ ₹${currentPrice}`);
+//     } else if (Date.now() - startTime >= 59000) {
+//       clearInterval(interval);
+//       const fallbackPrice = getCurrentPrice(symbol);
+//       executeSell(symbol, fallbackPrice, qty);
+//       alert(`⚠️ Sell target ₹${targetPrice} not hit. Fallback sell at ₹${fallbackPrice}`);
+//     }
+//   }, 1000);
+// }
+
+
+// === Helpers ===
+function getCurrentPrice(symbol) {
+  const stock = allStocks.find(s => s.symbol === symbol);
+  return stock ? parseFloat(stock.current_price) : 0;
+}
+
+
+// === Buy Logic ===
+function executeBuy(symbol, price, qty) {
+  const cost = qty * price;
+  if (netWorth < cost) return alert(`❌ GTT Buy Failed: Need ₹${cost}, but only ₹${netWorth} available.`);
+
+  fetch('/api/stocks/buy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ symbol, quantity: qty, price })
+  }).then(() => {
+    if (!holdings[symbol]) holdings[symbol] = { quantity: 0, avgPrice: 0 };
+
+    const totalQty = holdings[symbol].quantity + qty;
+    holdings[symbol].avgPrice = ((holdings[symbol].avgPrice * holdings[symbol].quantity) + (price * qty)) / totalQty;
+    holdings[symbol].quantity = totalQty;
+
+    netWorth -= cost;
+    persistData();
+    document.getElementById('netValue').innerText = netWorth.toFixed(2);
+    updatePortfolioSummary();
+  }).catch(err => alert('GTT Buy Error: ' + err));
+}
+
+// === Sell Logic ===
+// function executeSell(symbol, price, qty) {
+//   if (!holdings[symbol] || holdings[symbol].quantity < qty) {
+//     return alert(`❌ GTT Sell Failed: Not enough shares of ${symbol}`);
+//   }
+
+//   fetch('/api/stocks/sell', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ symbol, quantity: qty, price })
+//   }).then(() => {
+//     holdings[symbol].quantity -= qty;
+//     if (holdings[symbol].quantity === 0) holdings[symbol].avgPrice = 0;
+
+//     netWorth += qty * price;
+//     persistData();
+//     document.getElementById('netValue').innerText = netWorth.toFixed(2);
+//     updatePortfolioSummary();
+//     alert(`💰 ${symbol} sold at ₹${price}. Portfolio updated.`);
+//   }).catch(err => alert('GTT Sell Error: ' + err));
+// }
+
+
+
+
+
+
+// 🔁 Initial trigger
 fetchStocks();

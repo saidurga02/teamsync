@@ -45,10 +45,7 @@ async function fetchHoldings() {
 
     labels.push(h.symbol);
     values.push(h.quantity);
-    const color = getRandomColor();
-    backgroundColors.push(color);
-
-    
+    backgroundColors.push(getRandomColor());
   });
 
   if (window.donutChartInstance) window.donutChartInstance.destroy();
@@ -77,6 +74,7 @@ async function fetchHoldings() {
     }
   });
 }
+
 
 // ========== SOLD HISTORY =============
 async function fetchSoldHistory() {
@@ -321,52 +319,215 @@ async function renderSectorHoldingsBarChart() {
   });
 }
 
-// ========== TYPE OF PLAY BAR CHART ============
-async function renderTypeOfPlayBarChart() {
-  const res = await fetch('/api/stocks/holdings');
-  const data = await res.json();
 
-  const playTypeMap = { 'Intraday': 0, 'Swing': 0, 'Long-Term': 0 };
 
-  data.forEach(stock => {
-    const type = stock.type_of_play || 'Unknown';
-    if (!playTypeMap[type]) playTypeMap[type] = 0;
-    playTypeMap[type] += stock.quantity;
+async function fetchNetWorthBarChart() {
+  const res = await fetch('/api/stocks/transactions');
+  const transactions = await res.json();
+  if (!transactions.length) return;
+
+  let balance = 100000;
+  const timeline = [];
+  const netValues = [];
+
+  const holdings = {};
+
+  transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  transactions.forEach(tx => {
+    const { type, symbol, quantity, price, timestamp } = tx;
+
+    if (type === 'BUY') {
+      balance -= price * quantity;
+      holdings[symbol] = (holdings[symbol] || 0) + quantity;
+    } else if (type === 'SELL') {
+      balance += price * quantity;
+      holdings[symbol] = (holdings[symbol] || 0) - quantity;
+    }
+
+    const portfolioValue = Object.entries(holdings).reduce((sum, [sym, qty]) => {
+      if (qty > 0) {
+        return sum + (qty * price); // same mock price
+      }
+      return sum;
+    }, 0);
+
+    timeline.push(new Date(timestamp).toLocaleTimeString());
+    netValues.push(balance + portfolioValue);
   });
 
-  const canvas = document.getElementById('typeBarChart');
+  const ctx = document.getElementById('netWorthBarChart').getContext('2d');
+  if (window.netWorthBarChartInstance) window.netWorthBarChartInstance.destroy();
 
-  new Chart(canvas.getContext('2d'), {
-    type: 'bar',
+  window.netWorthBarChartInstance = new Chart(ctx, {
+    type: 'line',
     data: {
-      labels: Object.keys(playTypeMap),
+      labels: timeline,
       datasets: [{
-        label: 'Holdings by Type of Play',
-        data: Object.values(playTypeMap),
-        backgroundColor: '#FF9F40'
+        label: 'Net Worth (₹)',
+        data: netValues,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        segment: {
+          borderColor: ctx => {
+            const { p0, p1 } = ctx;
+            return p1.parsed.y > p0.parsed.y ? '#2ecc71' : '#e74c3c';  // Green or Red line
+          }
+        },
+        pointBackgroundColor: ctx => {
+          const index = ctx.dataIndex;
+          if (index === 0) return '#2ecc71';
+          return netValues[index] > netValues[index - 1] ? '#2ecc71' : '#e74c3c';
+        },
+        pointBorderColor: ctx => {
+          // Match border with background to avoid white outline
+          const index = ctx.dataIndex;
+          if (index === 0) return '#2ecc71';
+          return netValues[index] > netValues[index - 1] ? '#2ecc71' : '#e74c3c';
+        }
       }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: true },
+        tooltip: {
+          callbacks: {
+            label: ctx => `₹${ctx.parsed.y.toFixed(2)}`
+          }
+        },
+        title: {
+          display: true,
+          text: 'Net Worth Over Time'
+        }
+      },
       scales: {
         y: {
-          beginAtZero: true,
-          title: { display: true, text: 'Quantity Held' }
-        },
-        x: {
-          title: { display: true, text: 'Type of Play' }
+          beginAtZero: false,
+          min: 0,  // 👈 start Y-axis from ₹1,00,000
+          ticks: {
+            callback: value => '₹' + value.toFixed(0)
+          }
         }
       }
     }
   });
+  
 }
 
+async function fetchPortfolioSummary() {
+  try {
+    const holdingsRes = await fetch(`/api/users/1/holdings`);
+    const holdings = await holdingsRes.json();
+
+    let totalInvestment = 0;
+    let currentValue = 0;
+
+    for (const stock of holdings) {
+      const cost = stock.avg_buy_price * stock.quantity;
+      const current = stock.current_price * stock.quantity;
+      totalInvestment += cost;
+      currentValue += current;
+    }
+
+    // Update DOM
+    document.getElementById('totalInvestment').innerText = totalInvestment.toLocaleString('en-IN');
+    document.getElementById('currentValue').innerText = currentValue.toLocaleString('en-IN');
+
+    const statusEl = document.getElementById('portfolioStatus');
+    const diff = currentValue - totalInvestment;
+
+    if (diff > 0) {
+      statusEl.innerText = `Profit of ₹${diff.toLocaleString('en-IN')}`;
+      statusEl.style.color = 'green';
+    } else if (diff < 0) {
+      statusEl.innerText = `Loss of ₹${Math.abs(diff).toLocaleString('en-IN')}`;
+      statusEl.style.color = 'red';
+    } else {
+      statusEl.innerText = 'No Profit, No Loss';
+      statusEl.style.color = '#333';
+    }
+  } catch (err) {
+    console.error("Failed to fetch portfolio data", err);
+  }
+}
+// ========== SUMMARY CARD =============
+async function fetchSummary() {
+  const res = await fetch('/api/stocks/summary');
+  const data = await res.json();
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="card">
+      <h3>Invested</h3>
+      <p>₹${data.totalInvested}</p>
+    </div>
+    <div class="card">
+      <h3>Current Value</h3>
+      <p>₹${data.currentValue}</p>
+    </div>
+    <div class="card">
+      <h3>${data.gainLoss >= 0 ? 'Profit' : 'Loss'}</h3>
+      <p style="color:${data.gainLoss >= 0 ? 'green' : 'red'};">
+        ₹${data.gainLoss} (${data.gainLossPercent}%)
+      </p>
+    </div>
+  `;
+}
+let holdings = {
+  TCS: { quantity: 10, avgPrice: 3500 },
+  INFY: { quantity: 5, avgPrice: 1500 }
+};
+
+let allStocks = [];
+
+function updatePortfolioSummary() {
+  let s1 = 0; // total invested
+  let s2 = 0; // current value
+
+  for (const symbol in holdings) {
+    const { quantity, avgPrice } = holdings[symbol];
+    if (quantity <= 0) continue;
+
+    const stock = allStocks.find(s => s.symbol === symbol);
+    if (!stock) continue;
+
+    const currentPrice = parseFloat(stock.current_price);
+    if (isNaN(currentPrice)) continue;
+
+    s1 += avgPrice * quantity;
+    s2 += currentPrice * quantity;
+  }
+
+  const diff = s2 - s1;
+  const status = diff > 0 ? 
+    `<span style="color:green;">&#9650; ₹${diff.toFixed(2)}</span>` :
+    diff < 0 ?
+    `<span style="color:red;">&#9660; ₹${Math.abs(diff).toFixed(2)}</span>` :
+    `<span style="color:gray;">No Profit, No Loss</span>`;
+
+  document.getElementById('portfolioSummary').innerHTML = `
+    Invested: ₹${s1.toFixed(2)} | Current Value: ₹${s2.toFixed(2)} | ${status}
+  `;
+}
+
+fetch('/api/stocks')
+  .then(res => res.json())
+  .then(stocks => {
+    allStocks = stocks;
+    updatePortfolioSummary();
+  });
+
+
 // ========== INIT ALL ==========
+fetchNetWorthBarChart(); // new function for bar version
+
+fetchPortfolioSummary();
 fetchUserData();
 fetchHoldings();
 fetchSoldHistory();
 fetchPerformanceChart();
 renderSectorHoldingsBarChart();
-renderTypeOfPlayBarChart();
+
 fetchHourlyNetTrend();

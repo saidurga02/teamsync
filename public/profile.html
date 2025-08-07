@@ -17,42 +17,49 @@
         <h2>👤 Welcome, <span id="userName">Tim</span></h2>
         <p>Email: <span id="userEmail">jamescharlie@gmail.com</span></p>
         <p>Joined: <span id="joinedDate">02/08/2025</span></p>
-        
-        
+        <div id="portfolioSummary" style="margin-bottom: 18px; font-weight: bold;color:#2d73ce;"></div>
+      </section>
+      
+      
+      <!-- INVESTMENT SUMMARY -->
+<!-- <section class="summary-box" style="margin-top: 20px; border: 1px solid #65b0ec; padding: 15px; border-radius: 10px; background-color: #093b85;">
+  <h3>💰 Portfolio Summary</h3>
+  <div style="display: flex; justify-content: space-between;">
+    <p>Total Invested: <strong>₹<span id="totalInvestment">0</span></strong></p>
+    <p>Current Value: <strong>₹<span id="currentValue">0</span></strong></p>
+    <p id="portfolioStatus">
+      <span style="font-weight: bold;">No Profit, No Loss</span>
+    </p>
+  </div>
+</section> -->
+
+
+
+      <!-- COMBINED CHARTS: Doughnut and Line side-by-side -->
+      <section class="combined-charts" style="display: flex; gap: 40px; margin-top: 20px;">
+        <div class="donut-box animate-chart" style="flex: 1;">
+          <h4>Stock Holdings</h4>
+          <canvas id="donutChart" width="250" height="250"></canvas>
+          <div class="donut-legend" id="donutDetails"></div>
+        </div>
+
+        <div class="line-box animate-chart" style="flex: 2;">
+          <h4>📊 Last 7 Hours Trend</h4>
+          <canvas id="netWorthChart"></canvas>
+        </div>
       </section>
 
-      <!-- PIE CHART & LEGEND -->
-       
-    <!-- COMBINED CHARTS -->
-        <section class="combined-chart">
-          <!-- PIE CHART -->
-          <div class="donut-box animate-chart">
-            <h4>Stock Holdings</h4>
-            <canvas id="donutChart" width="160" height="160"></canvas>
-            <div class="donut-legend" id="donutDetails"></div>
-          </div>
-
-          <!-- LINE CHART -->
-          <div class="line-box animate-chart">
-            <h4>📊 Recent Trend</h4>
-            <canvas id="netWorthChart" height="250"></canvas>
-          </div>
-        </section>
-    <!-- Bar Charts Section -->
-        <div class="bar-charts">
-            <div class="bar-wrapper">
-            <h4>Sector Holdings</h4>
-            <canvas id="sectorBarChart"></canvas>
-            </div>
-            <div class="bar-wrapper">
-            <h4>Type of Holdings</h4>
-            <canvas id="typeBarChart"></canvas>
-            </div>
+      <!-- BAR CHARTS Section -->
+      <div class="bar-charts" style="display: flex; gap: 20px; margin-top: 30px;">
+        <div class="bar-wrapper" style="flex: 1;">
+          <h4>Sector Holdings</h4>
+          <canvas id="sectorBarChart"></canvas>
         </div>
-  
-
-      
-  
+        <div class="bar-wrapper" style="flex: 1;">
+          <h4>Net Worth (Bar)</h4>
+          <canvas id="netWorthBarChart"></canvas>
+        </div>
+      </div>
 
       <!-- SOLD HISTORY -->
       <section class="sold-section">
@@ -77,12 +84,8 @@
       <h3>📦 Holdings</h3>
       <ul id="holdingsList"></ul>
     </div>
-   
   </div>
 
   <script src="profile.js"></script>
-
 </body>
-
-
 </html>

@@ -105,8 +105,8 @@ async function getRecommendation() {
       `;
     }
 
-    // ✅ Display output
     output.innerHTML = `
+    <div class="output-compact">
       <h3>${symbol} Analysis</h3>
       <p><strong>Age:</strong> ${age} | <strong>Salary:</strong> ₹${salary} | <strong>Risk Tolerance:</strong> ${riskTolerance}</p>
       <p><strong>Investment Budget:</strong> ₹${budget}</p>
@@ -118,7 +118,9 @@ async function getRecommendation() {
       <p><strong>Recommendation:</strong> <span style="color:blue">${recommendation}</span></p>
       <p><strong>Reason:</strong> ${reason}</p>
       ${extraAdvice}
-    `;
+    </div>
+  `;
+  
   } catch (error) {
     output.textContent = 'Error fetching data.';
     console.error(error);
