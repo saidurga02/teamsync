@@ -12,39 +12,38 @@ body {
 /* HEADER */
 .header {
   text-align: center;
-  padding: 40px 20px; /* Restored original size */
-  background: linear-gradient(120deg,#1b2735, #2c5364);
-  box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+  padding: 10px 10px; /* Very small */
+  background: linear-gradient(120deg,#89f7fe, #0072ff);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
 }
 
 .header h1 {
   margin: 0;
-  font-size: 2.2rem; /* Original larger size */
-  font-weight: 800;
+  font-size: 1.1rem; /* Much smaller */
+  font-weight: 700;
 }
 
 .net-worth-card {
-  margin-top: 20px; /* Original spacing */
+  margin-top: 6px;
   display: inline-block;
-  padding: 20px 35px; /* Original padding */
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
+  padding: 6px 10px; /* Very compact */
+  border-radius: 6px;
+  backdrop-filter: blur(6px);
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .net-worth-card h2 {
-  margin: 0 0 8px;
-  font-size: 1.1rem; /* Original size */
+  margin: 0 0 2px;
+  font-size: 0.7rem;
   color: #fcfcfc;
 }
 
 .net-worth-value {
-  font-size: 1.8rem; /* Original size */
-  font-weight: 800;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: #f8f8f5;
-  text-shadow: 0 0 10px rgba(253, 253, 250, 0.6);
 }
 
 /* DASHBOARD CARD */
