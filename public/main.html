@@ -15,14 +15,15 @@
     }
 
     .header {
-      background: linear-gradient(to right, #b6e0fe, #80caff);
-      color: #00334d;
+      background: linear-gradient(to right, #0f1b2b, #1f3b5c);
+  color: #e0e6ed;
       padding: 20px;
       text-align: center;
       font-size: 28px;
       font-weight: bold;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       position: relative;
+      font-style: italic
     }
 
     .date {
@@ -31,17 +32,19 @@
       right: 20px;
       font-size: 14px;
       color: #00334d;
+      font-style: italic
     }
 
     .nav {
-    
+      font-style: italic;
       display: flex;
       justify-content: center;
       padding: 10px 0;
     }
 
     .nav button {
-      background-color: #ffffff;
+      background-color: #1f3b5c;
+      color: #e0e6ed;
       border: none;
       padding: 10px 22px;
       margin: 0 10px;
@@ -49,31 +52,45 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: bold;
-      color: #0073aa;
+    
       transition: background-color 0.3s ease, color 0.3s ease;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-style: italic
     }
 
     .nav button:hover {
-      background-color: #0073aa;
+      background-color: #2563eb;
       color: white;
     }
 
     .content {
       flex-grow: 1;
     }
-
+    .client-id,.date {
+      color: #66d9ef;
+    }
+    
     iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
+    .client-id {
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      font-size: 14px;
+      
+      font-style: italic;
+    }
+    
   </style>
 </head>
 <body>
   <div class="header">
     Hello, James Charlie
     <div class="date" id="todayDate"></div>
+    <div class="client-id" id="clientId">Client ID:45456760</div>
     <div class="nav">
       <button onclick="loadPage('profile.html')">Profile</button>
       <button onclick="loadPage('history.html')">History</button>

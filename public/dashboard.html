@@ -40,6 +40,7 @@
     </div>
   </div>
 </div>
+<!-- <div id="portfolioSummary" style="margin-bottom: 20px; font-weight: bold;"></div> -->
 
 
     <table id="stocksTable" class="stocks-table">
@@ -61,6 +62,45 @@
       <tbody id="stocksBody"></tbody>
     </table>
   </div>
+<!-- GTT Modal HTML -->
+<!-- GTT Modal HTML -->
+<div id="gttModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+  background-color:#f9f9f9; padding:20px; border:1px solid #ccc; border-radius:10px; z-index:9999; box-shadow:0 0 10px rgba(0,0,0,0.2); width:320px;">
+
+  <h3 style="margin-top:0; color:#000; text-align:center;">GTT Order</h3>
+  <button onclick="closeGTTModal()" style="background-color:#dc3545; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+    X
+  </button>
+
+  <p style="margin-bottom:10px; color:#000;">
+    <b>Symbol:</b> <span id="gttSymbol" style="color:#000;"></span>
+  </p>
+
+  <div style="margin-bottom:10px;">
+    <label for="gttQty" style="display:block; font-weight:bold; color:#000;">Quantity:</label>
+    <input type="number" id="gttQty" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" value="1" />
+  </div>
+
+  <div style="margin-bottom:10px;">
+    <label for="gttBuyPrice" style="display:block; font-weight:bold; color:#000;">Buy Price:</label>
+    <input type="number" id="gttBuyPrice" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" />
+  </div>
+
+  <!-- <div style="margin-bottom:10px;">
+    <label for="gttSellPrice" style="display:block; font-weight:bold; color:#000;">Sell Price:</label>
+    <input type="number" id="gttSellPrice" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" />
+  </div> -->
+
+  <div style="display:flex; justify-content:space-between;">
+    <button onclick="placeGTTOrder()" style="background-color:#28a745; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">
+      Place Order
+    </button>
+   
+  </div>
+
+</div>
+
+
 
   <script src="dashboard.js"></script>
 </body>
