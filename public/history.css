@@ -141,62 +141,47 @@ body {
   gap: 4px;
   margin-top: 6px;
 }
-
-.trade-box {
-  flex: 1;
-  padding: 4px; /* Very compact */
-  border-radius: 4px;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.1);
+/* Make table full width */
+.trade-box table {
+  width: 100%;
+  border-spacing: 4px; 
+  margin:10px;/* spacing between input fields */
 }
 
-.trade-box h3 {
-  margin: 0 0 4px;
-  font-size: 0.65rem;
+/* Make each table cell take equal width */
+.trade-box table td {
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
+/* Make buttons sit side-by-side within table row */
+.trade-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+
+}
 .trade-box input {
-  width: 100%;
-  padding: 3px;
-  margin: 2px 0;
-  border-radius: 3px;
-  font-size: 0.65rem;
-  border: none;
-  background: rgba(255,255,255,0.08);
+  width: 150px;
+  background-color: #112240;
   color: white;
 }
-
-/* BUTTONS VERY SMALL */
-.buy-btn {
-  background: linear-gradient(90deg, #2ecc71, #27ae60);
-  border: none;
-  padding: 3px 6px;
+.trade-buttons .buy-btn,
+.trade-buttons .sell-btn {
   font-size: 0.65rem;
-  border-radius: 3px;
-  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  margin: 2px;
+  font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
-  width: 100%;
-}
-
-.buy-btn:hover {
-  background: linear-gradient(90deg, #27ae60, #1e8449);
-}
-
-.sell-btn {
-  background: linear-gradient(90deg, #e74c3c, #c0392b);
-  border: none;
-  padding: 3px 6px;
-  font-size: 0.65rem;
-  border-radius: 3px;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-  width: 100%;
-}
-
-.sell-btn:hover {
-  background: linear-gradient(90deg, #c0392b, #922b21);
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.2s;
+  background-color: #64ffda; /* green */
+  color: rgb(22, 22, 22);
+  
 }
 
 @keyframes fadeIn {

@@ -35,7 +35,7 @@
       </div>
 
       <div class="modal-info">
-        <p><strong>Type:</strong> <span id="modalPlay"></span></p>
+        <!-- <p><strong>Type:</strong> <span id="modalPlay"></span></p> -->
         <p><strong>Volume:</strong> <span id="modalVolume"></span></p>
         <p><strong>Market Cap:</strong> <span id="modalMarketCap"></span></p>
         <p><strong>Current Price:</strong> ₹<span id="modalCurrentPrice"></span></p>
@@ -44,22 +44,26 @@
       <canvas id="modalChart" width="600" height="250"></canvas>
 
       <hr>
-
       <div class="trade-section">
-        <div class="trade-box buy-box">
-          <h3>Buy Stock</h3>
-          <input id="buyQty" placeholder="Quantity" type="number">
-          <input id="buyPrice" placeholder="Price" type="number">
-          <button id="buyBtn" class="buy-btn">Buy</button>
-        </div>
-
-        <div class="trade-box sell-box">
-          <h3>Sell Stock</h3>
-          <input id="sellQty" placeholder="Quantity" type="number">
-          <input id="sellPrice" placeholder="Price" type="number">
-          <button id="sellBtn" class="sell-btn">Sell</button>
+        <div class="trade-box">
+          <h3>Trade Stock</h3>
+          <table>
+            <tr>
+              <td><input id="tradeQty" placeholder="Quantity" type="number"></td>
+              <td><input id="tradePrice" placeholder="Price" type="number"></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div class="trade-buttons">
+                  <button id="buyBtn" onclick="buyStock()" class="buy-btn">Buy</button>
+                  <button id="sellBtn"onclick="sellStock()" class="sell-btn">Sell</button>
+                </div>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
+      
     </div>
   </div>
 
