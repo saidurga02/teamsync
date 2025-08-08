@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Stock Advisor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 10px;
+      width: 270px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+      overflow:auto;
+    }
+
+    .popup-header {
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #0056b3;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 14px;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px;
+      background-color: #007bff;
+    }
+
+    .button-group button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: white;
+      color: #007bff;
+      cursor: pointer;
+    }
+
+    .popup-section {
+      display: none;
+      background-color: #ffffff;
+      padding: 20px;
+      color: black;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .popup-section.active {
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 8px;
+      width: 95%;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #output, #chatReply {
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .chat-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+        background-color: #ffffff;
+        min-height: 150px;
+        max-height: 290px;
+        overflow-y: auto;
+      }
+      
+      .msg {
+        max-width: 70%;
+        padding: 10px 14px;
+        border-radius: 16px;
+        font-size: 14px;
+        word-wrap: break-word;
+        display: inline-block;
+      }
+      
+      .user {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+        text-align: right;
+        border-top-right-radius: 0;
+      }
+      
+      .bot {
+        background-color: #f1f0f0;
+        align-self: flex-start;
+        text-align: left;
+        border-top-left-radius: 0;
+      }
+      
+      
+    .ask-btn {
+      width: 100%;
+      margin-top: 5px;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="popup" id="chatPopup">
+    <div class="popup-header">
+      How can I help you today?
+     
+    </div>
+
+    <div class="button-group" id="initialButtons">
+      <button onclick="showSection('recommendationSection')">Recommendation</button>
+      <button onclick="showSection('chatSection')">Ask Me</button>
+    </div>
+
+    <div id="recommendationSection" class="popup-section">
+       
+      <input id="age" type="number" placeholder="Enter age" />
+      <input id="salary" type="number" placeholder="Enter salary" />
+      <input id="symbolInput" type="text" placeholder="Stock Symbol (e.g. AAPL)" />
+      <button class="ask-btn" onclick="getRecommendation()">Get Recommendation</button>
+      <div id="output"></div>
+    </div>
+
+    <div id="chatSection" class="popup-section">
+      <input id="chatInput" placeholder="Type your message..." />
+      <button class="ask-btn" onclick="askChatbot()">Ask</button>
+      <div id="chatReply" class="chat-box"></div>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = '7abdfcf528aa41648308ffc30ff7ed35';
+
+    function showSection(id) {
+      document.getElementById('initialButtons').style.display = 'none';
+      document.querySelectorAll('.popup-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    async function askChatbot() {
+      const input = document.getElementById('chatInput').value.trim();
+      if (!input) return;
+
+      const replyBox = document.getElementById('chatReply');
+      replyBox.innerHTML += `<div class="msg user">${input}</div>`;
+
+      const res = await fetch('/api/chatbot/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
+      });
+
+      const data = await res.json();
+      replyBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+
+      document.getElementById('chatInput').value = '';
+      replyBox.scrollTop = replyBox.scrollHeight;
+    }
+
+    async function getRecommendation() {
+      const age = parseInt(document.getElementById('age').value);
+      const salary = parseInt(document.getElementById('salary').value);
+      const symbol = document.getElementById('symbolInput').value.trim().toUpperCase();
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+
+      if (!age || !salary || !symbol) {
+        output.innerHTML = '<p style="color:red;">Please enter all details.</p>';
+        return;
+      }
+
+      output.innerHTML = '⏳ Getting data...';
+
+      try {
+        const holdingsRes = await fetch('/api/stocks/holdings');
+        const holdingsData = await holdingsRes.json();
+        const ownedSymbols = holdingsData.map(h => h.symbol.toUpperCase());
+        const hasStock = ownedSymbols.includes(symbol);
+
+        const intervals = ['1month', '6month', '1year'];
+        const prices = {};
+
+        for (let interval of intervals) {
+          const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&outputsize=260&apikey=${apiKey}`);
+          const data = await res.json();
+
+          if (data.status === 'error') {
+            output.innerHTML = `<p>Error: ${data.message}</p>`;
+            return;
+          }
+
+          const series = data.values;
+          const daysAgo = { '1month': 22, '6month': 130, '1year': 260 };
+          const recent = parseFloat(series[0].close);
+          const past = parseFloat(series[Math.min(daysAgo[interval], series.length - 1)].close);
+          const change = (((recent - past) / past) * 100).toFixed(2);
+          prices[interval] = { recent, past, change };
+        }
+
+        const m1 = parseFloat(prices['1month'].change);
+        const m6 = parseFloat(prices['6month'].change);
+        const y1 = parseFloat(prices['1year'].change);
+
+        const riskTolerance = age < 30 ? 'High' : age < 50 ? 'Medium' : 'Low';
+        const budget = salary * 0.2;
+
+        let recommendation = 'Hold', reason = 'The stock is stable.', extraAdvice = '';
+
+        if (hasStock) {
+          if (m1 < -5 || y1 < -10) {
+            recommendation = 'Sell';
+            reason = 'You hold this stock and it is declining.';
+          } else if (m1 > 5 && m6 > 10 && y1 > 15) {
+            recommendation = 'Hold or Sell for profit';
+            reason = 'Stock is performing well — consider profit booking.';
+          }
+        } else {
+          if (m1 > 5 && m6 > 10 && y1 > 15) {
+            recommendation = riskTolerance === 'High' ? 'Buy' : 'Watch';
+            reason = 'Strong growth across time frames.';
+          } else if (m1 < -5 || y1 < -10) {
+            recommendation = 'Wait';
+            reason = 'Not ideal for new entry.';
+          }
+          extraAdvice = `
+            <p><strong>You don't currently hold this stock.</strong></p>
+            <ul>
+              <li>Risk: <strong>${riskTolerance}</strong></li>
+              <li>Investment Budget: ₹${budget}</li>
+              <li>${generateEntryAdvice(riskTolerance, m1, m6, y1)}</li>
+            </ul>`;
+        }
+
+        output.innerHTML = `
+          <h3>${symbol} Analysis</h3>
+          <p><strong>1 Month:</strong> ${m1}%</p>
+          <p><strong>6 Months:</strong> ${m6}%</p>
+          <p><strong>1 Year:</strong> ${y1}%</p>
+          <p><strong>Recommendation:</strong> ${recommendation}</p>
+          <p><strong>Reason:</strong> ${reason}</p>
+          ${extraAdvice}
+        `;
+      } catch (err) {
+        output.innerHTML = '<p>Error fetching data.</p>';
+        console.error(err);
+      }
+    }
+
+    function generateEntryAdvice(risk, m1, m6, y1) {
+      if (risk === 'High') {
+        if (m1 < 0 && y1 > 10) return "Consider buying on this dip.";
+        if (m1 > 3 && m6 > 5) return "Trending up. Enter now.";
+        return "Watch and enter on dip.";
+      }
+      if (risk === 'Medium') {
+        if (m1 > 3 && y1 > 10) return "Enter small and build.";
+        return "Wait for stable entry.";
+      }
+      if (risk === 'Low') {
+        if (m6 > 5 && y1 > 10) return "Enter cautiously next month.";
+        return "Too risky now.";
+      }
+    }
+  </script>
+</body>
+</html>

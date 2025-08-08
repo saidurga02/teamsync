@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #12294d;
+  background-color: #0f1b2b;
   color: #ffffff;
 }
 
@@ -85,19 +85,19 @@ body {
 .stocks-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #12294d;
+  background-color: #0f1b2b;
   color: #ffffff;
   border: 1px solid #1b263b;
 }
 
 .stocks-table th, .stocks-table td {
   padding: 12px 15px;
-  border-bottom: 1px solid #1b263b;
+  border-bottom: 1px solid #0f1b2b;
   text-align: left;
 }
 
 .stocks-table th {
-  background-color: #1b263b;
+  background-color: #0f1b2b;
 }
 
 .stocks-table tr:hover {
@@ -233,4 +233,23 @@ body {
 
 .action-btns button:last-child {
   background-color: red;
+}
+.popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #5c63c4;
+  color: rgb(14, 13, 13);
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  z-index: 9999;
+}
+.popup.show {
+  opacity: 1;
+  transform: translateY(0);
 }

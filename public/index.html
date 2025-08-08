@@ -15,19 +15,26 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      position: relative;
     }
 
     h1 {
       font-size: 3rem;
       color: #1e3a8a;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       animation: popIn 0.8s ease-out forwards;
     }
 
     p {
       font-size: 1.4rem;
-      color: #475569;
+      color: #334155;
       animation: fadeIn 1.5s ease-in forwards;
+    }
+
+    .emoji {
+      font-size: 2.8rem;
+      animation: bounce 1.2s infinite alternate;
+      margin-bottom: 10px;
     }
 
     @keyframes popIn {
@@ -52,28 +59,47 @@
       }
     }
 
-    .emoji {
-      font-size: 2.5rem;
-      animation: bounce 1.2s infinite alternate;
-      margin-bottom: 10px;
-    }
-
     @keyframes bounce {
       from { transform: translateY(0); }
       to { transform: translateY(-10px); }
     }
+
+    /* Decorative background icons */
+    .background-icons {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      background-image: url('https://www.transparenttextures.com/patterns/graphy.png'),
+                        url('https://cdn-icons-png.flaticon.com/512/5948/5948787.png');
+      background-size: 300px, 80px;
+      background-repeat: repeat, repeat;
+      background-position: center;
+      opacity: 0.05;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
+  <div class="background-icons"></div>
 
-  <div class="emoji">🚀💼</div>
-  <h1>Hello Master 👑</h1>
-  <p>Let’s kick-start the day with power moves ⚡</p>
+  <div class="content">
+    <div class="emoji">📈🧞‍♂️</div>
+    <h1>StockGenie welcomes you</h1>
+    <p>Ginie-us investments at your fingertips</p>
+  </div>
 
   <script>
     setTimeout(() => {
       window.location.href = "main.html";
-    }, 2000); // Slightly longer delay for full effect
+    }, 3500); // Slightly longer delay for full entrance
   </script>
 </body>
 </html>
