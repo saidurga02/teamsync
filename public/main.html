@@ -16,14 +16,14 @@
 
     .header {
       background: linear-gradient(to right, #0f1b2b, #1f3b5c);
-  color: #e0e6ed;
+      color: #e0e6ed;
       padding: 20px;
       text-align: center;
       font-size: 28px;
       font-weight: bold;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       position: relative;
-      font-style: italic
+      font-style: italic;
     }
 
     .date {
@@ -31,8 +31,17 @@
       top: 10px;
       right: 20px;
       font-size: 14px;
-      color: #00334d;
-      font-style: italic
+      color: #66d9ef;
+      font-style: italic;
+    }
+
+    .client-id {
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      font-size: 14px;
+      color: #66d9ef;
+      font-style: italic;
     }
 
     .nav {
@@ -52,10 +61,9 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: bold;
-    
       transition: background-color 0.3s ease, color 0.3s ease;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      font-style: italic
+      font-style: italic;
     }
 
     .nav button:hover {
@@ -63,39 +71,90 @@
       color: white;
     }
 
+    .stock-ticker {
+      overflow: hidden;
+      height: 35px;
+      position: relative;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scroll-left 47s linear infinite;
+      font-size: 13px;
+      font-weight: bold;
+      padding-left: 100%;
+    }
+
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(0%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    .ticker-content img {
+      height: 20px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
     .content {
       flex-grow: 1;
     }
-    .client-id,.date {
-      color: #66d9ef;
-    }
-    
+
     iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
-    .client-id {
-      position: absolute;
-      top: 30px;
+
+    #chatButton {
+      position: fixed;
+      bottom: 20px;
       right: 20px;
-      font-size: 14px;
-      
-      font-style: italic;
+      background-color: #0077cc;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1000;
+      font-weight: bold;
     }
-    
+
+    #chatFrame {
+      position: fixed;
+      bottom: 70px;
+      right: 20px;
+      width: 320px;
+      height: 420px;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    Hello, James Charlie
+    StockGenie
     <div class="date" id="todayDate"></div>
-    <div class="client-id" id="clientId">Client ID:45456760</div>
+    <div class="client-id" id="clientId">Client ID: 45456760</div>
+
     <div class="nav">
       <button onclick="loadPage('profile.html')">Profile</button>
       <button onclick="loadPage('history.html')">History</button>
       <button onclick="loadPage('dashboard.html')">Invest</button>
-  
+    </div>
+
+    <div class="stock-ticker">
+      <div class="ticker-content" id="tickerContent">
+        <!-- Dynamic stock data -->
+      </div>
     </div>
   </div>
 
@@ -103,9 +162,20 @@
     <iframe id="mainFrame" src="profile.html"></iframe>
   </div>
 
+  <!-- Floating Chat Button -->
+  <div id="chatButton" onclick="toggleChat()">💬 Advisor</div>
+
+  <!-- Embedded Chat Frame -->
+  <iframe id="chatFrame" src="riskchat.html"></iframe>
+
   <script>
     function loadPage(page) {
       document.getElementById('mainFrame').src = page;
+    }
+
+    function toggleChat() {
+      const chat = document.getElementById('chatFrame');
+      chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'block' : 'none';
     }
 
     // Set today's date
@@ -113,44 +183,61 @@
     const today = new Date();
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     dateElem.textContent = today.toLocaleDateString(undefined, options);
-  </script>
-  <!-- Floating Chat Button -->
-<div id="chatButton" onclick="toggleChat()" style="
-position: fixed;
-bottom: 20px;
-right: 20px;
-background-color: #0077cc;
-color: white;
-padding: 12px 16px;
-border-radius: 30px;
-cursor: pointer;
-box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-z-index: 1000;
-font-weight: bold;
-">
-💬 Advisor
-</div>
 
-<!-- Embedded Chat Frame -->
-<iframe id="chatFrame" src="risk.html" style="
-position: fixed;
-bottom: 70px;
-right: 20px;
-width: 320px;
-height: 420px;
-border: none;
-border-radius: 15px;
-box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-z-index: 1000;
-display: none;
-"></iframe>
+    // Company logo fetch function
+    function getCompanyLogo(domain) {
+      return `https://logo.clearbit.com/${domain}`;
+    }
 
-</body>
-<script>
-  function toggleChat() {
-    const chat = document.getElementById('chatFrame');
-    chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'block' : 'none';
-  }
+    // Simulated stock data
+    const stockData = [
+    { symbol: "reliance", domain: "ril.com", price: 2880.75, change: 1.3 },
+    { symbol: "infosys", domain: "infosys.com", price: 1501.2, change: -0.5 },
+    { symbol: "tcs", domain: "tcs.com", price: 3600.4, change: 0.8 },
+    { symbol: "hdfcbank", domain: "hdfcbank.com", price: 1700.3, change: -1.1 },
+    { symbol: "sbi", domain: "sbi.co.in", price: 615.6, change: 0.4 },
+    { symbol: "wipro", domain: "wipro.com", price: 410.2, change: -0.7 },
+   
+    { symbol: "axisbank", domain: "axisbank.com", price: 950.3, change: -0.2 },
+    { symbol: "hcltech", domain: "hcltech.com", price: 1215.7, change: 1.0 },
+    { symbol: "techmahindra", domain: "techmahindra.com", price: 1230.1, change: -0.6 },
+    { symbol: "bharti", domain: "airtel.in", price: 925.2, change: 0.9 },
+    { symbol: "larsen", domain: "larsentoubro.com", price: 3230.0, change: -0.3 },
+    { symbol: "ultratech", domain: "ultratechcement.com", price: 8780.9, change: 0.7 },
+    { symbol: "nestle", domain: "nestle.in", price: 24500.5, change: -1.2 },
+    { symbol: "asianpaints", domain: "asianpaints.com", price: 3400.3, change: 0.5 },
+    { symbol: "bajajauto", domain: "bajajauto.com", price: 5230.7, change: 1.1 },
+    { symbol: "hdfclife", domain: "hdfclife.com", price: 620.4, change: -0.4 },
+    { symbol: "powergrid", domain: "powergrid.in", price: 264.5, change: 0.6 },
+    { symbol: "ntpc", domain: "ntpc.co.in", price: 272.9, change: -0.1 },
+    { symbol: "adaniports", domain: "adaniports.com", price: 1280.0, change: 1.4 }
+  ];
   
-</script>
+
+    function updateTicker() {
+      const ticker = document.getElementById("tickerContent");
+
+      const generateTickerItems = () => {
+        return stockData.map(stock => {
+          const isGain = stock.change >= 0;
+          const arrow = isGain ? '🔺' : '🔻';
+          const changeText = `${isGain ? '+' : '–'}${stock.change}%`;
+          const logo = getCompanyLogo(stock.domain);
+          const color = isGain ? '#00ff00' : '#ff4d4d';
+
+          return `
+            <img src="${logo}" alt="${stock.symbol}" />
+            <span style="color:${color}">${arrow} ₹${stock.price.toFixed(2)} (${changeText})</span>
+          `;
+        }).join('&nbsp;&nbsp;&nbsp;&nbsp;');
+      };
+
+      // Repeat for seamless scroll
+      ticker.innerHTML = generateTickerItems() + "&nbsp;&nbsp;&nbsp;&nbsp;" + generateTickerItems();
+    }
+
+    updateTicker();
+    setInterval(updateTicker, 10000); // Update every 10 seconds
+  </script>
+</body>
 </html>

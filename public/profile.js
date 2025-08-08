@@ -5,11 +5,11 @@ async function fetchUserData() {
     const userRes = await fetch(`/api/users/${userId}`);
     const user = await userRes.json();
 
-    const userName = user?.name || 'James Charlie';
+    const userName = 'James Charlie';
     const joinedAt = new Date(user?.joined_at);
     const isValidDate = joinedAt instanceof Date && !isNaN(joinedAt);
 
-    document.getElementById('userName').innerText = userName;
+    document.getElementById('userName').innerText = userName||'James Charlie';
     document.getElementById('joinedDate').innerText = isValidDate
       ? joinedAt.toDateString()
       : '2nd Aug 2025';
@@ -405,10 +405,10 @@ async function fetchNetWorthBarChart() {
       },
       scales: {
         y: {
-          beginAtZero: false,
-          min: 0,  // 👈 start Y-axis from ₹1,00,000
+          beginAtZero: true,  // ✅ Start from zero
           ticks: {
-            callback: value => '₹' + value.toFixed(0)
+            stepSize: 100000,  // ✅ Increase by ₹5,00,000
+            callback: value => '₹' + value.toLocaleString()
           }
         }
       }
@@ -475,49 +475,9 @@ async function fetchSummary() {
     </div>
   `;
 }
-let holdings = {
-  TCS: { quantity: 10, avgPrice: 3500 },
-  INFY: { quantity: 5, avgPrice: 1500 }
-};
 
-let allStocks = [];
 
-function updatePortfolioSummary() {
-  let s1 = 0; // total invested
-  let s2 = 0; // current value
 
-  for (const symbol in holdings) {
-    const { quantity, avgPrice } = holdings[symbol];
-    if (quantity <= 0) continue;
-
-    const stock = allStocks.find(s => s.symbol === symbol);
-    if (!stock) continue;
-
-    const currentPrice = parseFloat(stock.current_price);
-    if (isNaN(currentPrice)) continue;
-
-    s1 += avgPrice * quantity;
-    s2 += currentPrice * quantity;
-  }
-
-  const diff = s2 - s1;
-  const status = diff > 0 ? 
-    `<span style="color:green;">&#9650; ₹${diff.toFixed(2)}</span>` :
-    diff < 0 ?
-    `<span style="color:red;">&#9660; ₹${Math.abs(diff).toFixed(2)}</span>` :
-    `<span style="color:gray;">No Profit, No Loss</span>`;
-
-  document.getElementById('portfolioSummary').innerHTML = `
-    Invested: ₹${s1.toFixed(2)} | Current Value: ₹${s2.toFixed(2)} | ${status}
-  `;
-}
-
-fetch('/api/stocks')
-  .then(res => res.json())
-  .then(stocks => {
-    allStocks = stocks;
-    updatePortfolioSummary();
-  });
 
 
 // ========== INIT ALL ==========
